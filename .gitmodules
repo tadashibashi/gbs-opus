@@ -4,6 +4,7 @@
 [submodule "lib/nativefiledialog"]
 	path = lib/nativefiledialog
 	url = https://github.com/mlabbe/nativefiledialog.git
+	ignore = dirty
 [submodule "lib/gbsplay"]
 	path = lib/gbsplay
 	url = https://github.com/tadashibashi/gbsplay.git
