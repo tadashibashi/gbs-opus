@@ -16,9 +16,14 @@ private:
 
 class scope_ui : public ui::window {
 public:
-    scope_ui() : ui::window("GBS Opus"/*, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize*/) { }
+    scope_ui();
+    void init();
 private:
     void render() override;
+
+    bool m_show_scope = true;
+    int m_ticksize = 4;
+    std::string m_ticksize_text;
 };
 }
 

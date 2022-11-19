@@ -11,7 +11,8 @@ namespace gbs_opus
     void app::run() {
         if (systems::init())
         {
-            audio::engine::load_gbs("/Users/aaron/Downloads/Pokemon Card GB 2 - GRdan Sanjou (EMU)/PokemonCardGB2.gbs");
+            m_scope.init();
+            //audio::engine::load_gbs("/Users/aaron/Downloads/Pokemon Card GB 2 - GRdan Sanjou (EMU)/PokemonCardGB2.gbs");
             while (!systems::should_quit())
                 run_frame();
 

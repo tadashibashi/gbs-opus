@@ -7,6 +7,18 @@ add_library(imgui
 target_link_libraries(imgui PRIVATE SDL2)
 target_include_directories(imgui PUBLIC SDL/include ./imgui ./imgui/backends)
 
+add_custom_command(OUTPUT gbsplay/impulse.h gbsplay/config.h
+        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/gbsplay && make impulse.h
+        COMMENT "Making gbsplay impulse.h and config.h")
+
+add_library(gbsplay
+        gbsplay/gbcpu.c  gbsplay/gbhw.c  gbsplay/mapper.c  gbsplay/gbs.c  gbsplay/crc32.c
+        gbsplay/util.c gbsplay/plugout.c gbsplay/player.c gbsplay/cfgparser.c
+        gbsplay/plugout_wav.c gbsplay/plugout_vgm.c gbsplay/plugout_stdout.c
+        gbsplay/plugout_altmidi.c gbsplay/plugout_iodumper.c gbsplay/plugout_sdl.c
+        gbsplay/plugout_midi.c gbsplay/midifile.c gbsplay/filewriter.c
+        gbsplay/impulse.h gbsplay/config.h)
+target_link_libraries(gbsplay PRIVATE SDL2)
 #add_library(gbs gbsplay/gbcpu.c  gbsplay/gbhw.c  gbsplay/mapper.c  gbsplay/gbs.c  gbsplay/crc32.c)
 #        gbsplay/util.c gbsplay/plugout.c gbsplay/player.c gbsplay/cfgparser.c gbsplay/plugout_sdl.c)
 #target_include_directories(gbs PUBLIC gbsplay)

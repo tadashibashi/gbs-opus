@@ -8,3 +8,6 @@
 [submodule "lib/gbsplay"]
 	path = lib/gbsplay
 	url = https://github.com/tadashibashi/gbsplay.git
+[submodule "lib/implot"]
+	path = lib/implot
+	url = https://github.com/epezent/implot.git

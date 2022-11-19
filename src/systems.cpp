@@ -8,7 +8,8 @@
 #include "input/input.h"
 #include "ui/actions.h"
 #include "audio/engine.h"
-
+#include "implot.h"
+#include <filesystem>
 #include <nfd.h>
 
 namespace gbs_opus
@@ -56,7 +57,8 @@ namespace gbs_opus
         init_imgui();
         input::init();
         actions::init();
-        audio::engine::init(48000, 512);
+
+        audio::engine::init(48000, 1024);
 
         return true;
     }
@@ -75,6 +77,7 @@ namespace gbs_opus
     {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
+        ImPlot::CreateContext();
         ImGuiIO &io = ImGui::GetIO(); (void)io;
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -117,7 +120,8 @@ namespace gbs_opus
         // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
         // - Read 'docs/FONTS.md' for more instructions and details.
         // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-        //io.Fonts->AddFontDefault();
+        io.Fonts->AddFontDefault();
+
         //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
         //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
         //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
@@ -132,6 +136,7 @@ namespace gbs_opus
 
     static void shutdown_imgui()
     {
+        ImPlot::DestroyContext();
         ImGui_ImplSDLRenderer_Shutdown();
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
@@ -163,13 +168,22 @@ namespace gbs_opus
         input::process();
         SDL_Event ev;
         while(SDL_PollEvent(&ev))
-        {;
+        {
             ImGui_ImplSDL2_ProcessEvent(&ev);
             if (ev.type == SDL_QUIT)
                 s_should_quit = true;
             if (ev.type == SDL_WINDOWEVENT && ev.window.event == SDL_WINDOWEVENT_CLOSE &&
                 ev.window.windowID == SDL_GetWindowID(s_window))
                 s_should_quit = true;
+            if (ev.type == SDL_DROPFILE)
+            {
+                std::filesystem::directory_entry entry(ev.drop.file);
+                if (entry.exists() && entry.is_regular_file())
+                {
+                    audio::engine::load_gbs(ev.drop.file);
+                }
+
+            }
         }
 
     }
