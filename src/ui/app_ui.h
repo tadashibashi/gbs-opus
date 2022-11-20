@@ -3,6 +3,7 @@
 #include "ui_window.h"
 
 #include <imgui.h>
+class GPU_Image;
 
 namespace gbs_opus
 {
@@ -14,16 +15,19 @@ private:
         void show_menu_file();
 };
 
-class scope_ui : public ui::window {
+class control_ui : public ui::window {
 public:
-    scope_ui();
+    control_ui();
     void init();
+    ~control_ui();
 private:
     void render() override;
 
     bool m_show_scope = true;
+    bool m_show_registers = false;
     int m_ticksize = 4;
-    std::string m_ticksize_text;
+
+    GPU_Image *m_art;
 };
 }
 

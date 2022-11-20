@@ -25,6 +25,7 @@ namespace gbs_opus::audio
 
         static void set_pause(bool pause);
         static void load_gbs(const std::string &path, int track_num = 0);
+        static bool load_m3u(const std::string &path);
 
         static int16_t *s_buffer;
         static int16_t s_buffer_size;

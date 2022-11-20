@@ -17,8 +17,7 @@ namespace gbs_opus
         bool init();
         void shutdown();
 
-        SDL_Window *window();
-        SDL_Renderer *renderer();
+        void *target();
 
         // Render clear with color. Renders IMGUI as well
         void clear(uint8_t r, uint8_t g, uint8_t b);

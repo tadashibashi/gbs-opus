@@ -11,3 +11,6 @@
 [submodule "lib/implot"]
 	path = lib/implot
 	url = https://github.com/epezent/implot.git
+[submodule "lib/sdl-gpu"]
+	path = lib/sdl-gpu
+	url = https://github.com/tadashibashi/sdl-gpu.git

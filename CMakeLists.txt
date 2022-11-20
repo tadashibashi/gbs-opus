@@ -18,25 +18,25 @@ add_executable(gbs_opus src/main.cpp src/audio/plugout_app.cpp src/systems.h src
         src/ui/actions.cpp src/ui/actions.h src/gb_helper.h
 
         lib/implot/implot.cpp lib/implot/implot_items.cpp
-        )
+        src/m3u.cpp src/m3u.h src/gbs_meta.cpp src/gbs_meta.h)
 
 
 # Platform Libraries
 if (APPLE)
-    set(NATIVE_DIALOG_LIBS "-framework AppKit" nfd)
+    set(NATIVE_DIALOG_LIBS "-framework AppKit" nfd z "-framework OpenGL")
     set(PLATFORM_LIBS ${NATIVE_DIALOG_LIBS})
 
 elseif(WIN32)
-    set(NATIVE_DIALOG_LIBS comctl32 nfd)
+    set(NATIVE_DIALOG_LIBS comctl32 nfd zlib opengl32)
     set(PLATFORM_LIBS SDL2main ${NATIVE_DIALOG_LIBS})
 
 endif()
 
 target_link_directories(gbs_opus PRIVATE lib/nativefiledialog/build/lib/Release/x64)
-target_link_libraries(gbs_opus PRIVATE SDL2 ${PLATFORM_LIBS} imgui gbsplay z)
+target_link_libraries(gbs_opus PRIVATE SDL2 ${PLATFORM_LIBS} imgui gbsplay SDL_gpu)
 target_include_directories(gbs_opus PRIVATE
         lib/SDL/include lib/nativefiledialog/src/include src lib/gbsplay
-        lib/implot)
+        lib/implot lib/json lib/sdl-gpu/include)
 
 # MacOS Bundle Info
 #if (APPLE)

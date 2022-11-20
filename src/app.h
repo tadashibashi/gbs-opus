@@ -20,7 +20,7 @@ namespace gbs_opus
         void draw();
 
         menu_ui m_menu;
-        scope_ui m_scope;
+        control_ui m_scope;
     };
 }
 

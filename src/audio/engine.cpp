@@ -9,6 +9,8 @@ extern "C" {
 #include "plugout.h"
 #include "gbs_internal.h"
 }
+#include <m3u.h>
+#include <filesystem>
 
 #define CFG_FILTER_OFF "off"
 #define CFG_FILTER_DMG "dmg"
@@ -192,5 +194,43 @@ namespace gbs_opus
         }
 
         return plugout;
+    }
+
+    bool audio::engine::load_m3u(const std::string &path) {
+
+            m3u meta;
+            if (meta.open(path))
+            {
+                meta.debug_log();
+                std::filesystem::path fspath(path);
+
+                std::filesystem::directory_entry entry(fspath.parent_path().string() + "/" + meta.filename);
+                if (entry.exists() && entry.is_regular_file())
+                {
+
+                    ::gbs *tempgbs = common_init2(entry.path().c_str());
+                    if (!tempgbs)
+                    {
+                        std::cerr << "Error: Failed to open m3u's corresponding .gbs file\n";
+                        return false;
+                    }
+
+                    // Success, commit changes
+                    if (gbs)
+                        gbs_close(gbs);
+                    gbs = tempgbs;
+                    gbs_init(gbs, meta.gbs_track_num);
+                    if (!is_running())
+                    {
+                        toggle_pause();
+                        SDL_PauseAudio(false);
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+
     }
 }

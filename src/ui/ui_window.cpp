@@ -5,8 +5,9 @@ namespace gbs_opus::ui
 {
     void window::do_render()
     {
+        ImGui::SetNextWindowSizeConstraints(m_size_min, m_size_max);
         ImGui::Begin(m_name.c_str(), &m_visible, m_flags);
-        ImGui::SetWindowSize(m_size);
+
         render();
         ImGui::End();
     }

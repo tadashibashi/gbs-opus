@@ -28,12 +28,14 @@ namespace gbs_opus::ui
             m_flags(flags) { }
         void do_render() override;
         void set_size(ImVec2 size) { m_size = size; }
+        void set_constraint(ImVec2 min, ImVec2 max) { m_size_min = min; m_size_max = max; }
         [[nodiscard]] ImVec2 get_size() const { return m_size; }
 
         void set_flags(int flags) { m_flags = flags; }
         [[nodiscard]] int get_flags() const { return m_flags; }
     private:
         ImVec2 m_size;
+        ImVec2 m_size_min, m_size_max;
         int m_flags;
 
     };
