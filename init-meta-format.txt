@@ -2,20 +2,28 @@
     title     : "Pokemon Red",
     composer  : "Junichi Masuda",
     developer : "Game Freak, inc.",
+    arranger  : "Junichi Masuda",
     publisher : "Nintendo",
     copyright : "1996 Nintendo",
     filetype  : "GBS",
+    genre: "Soundtrack",
+    comment: "comment from creators",
+    coverart: "image.png"
 
     tracks : [
         {
             title : "Opening (part 1)",
+            index : 1 // gbs index, starting at 1
             length: { min: 0, sec: 12 },
-            loop  : false,
+            fade : 1,
+            composer: "Another composer" // *only here if different from main composer
+            comment: "" // *only here if comment
+            artwork: "yo.gif" // gif will produce a slideshow
         },
         {
             title : "Opening (part 2)",
-            length: { min: 1, sec: 31 },
-            loop : true
+            length : { min: 1, sec: 31 },
+            fade : 5
         }
     ]
 }

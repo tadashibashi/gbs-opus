@@ -48,6 +48,16 @@ bool gbs_opus::m3u::open(const std::string &path)
         return false;
     }
 
+    // file name == order
+    try {
+        auto fname = std::filesystem::path(path).filename().string();
+        track_num = std::stoi(fname.substr(0, fname.find_first_of(' ')));
+
+    } catch(...) {
+        track_num = -1;
+    }
+    std::cout << track_num << "\n";
+
     std::string m3u_str;
     if (!std::getline(file, m3u_str))
     {

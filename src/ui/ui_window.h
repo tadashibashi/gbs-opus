@@ -5,26 +5,34 @@
 #include <utility>
 #include "imgui.h"
 
+namespace gbs_opus
+{
+    class app;
+}
+
 namespace gbs_opus::ui
 {
     class element {
     public:
-        explicit element(const std::string &name) : m_name(name) { }
+        explicit element(gbs_opus::app *a, const std::string &name) :
+                m_app{a}, m_name(name) { }
         virtual void do_render() = 0;
 
         [[nodiscard]] bool is_visible() const { return m_visible; }
         void set_visible(bool visible) { m_visible = visible; }
 
         [[nodiscard]] const std::string &name() const { return m_name; }
+        gbs_opus::app *app() { return m_app; }
     protected:
         virtual void render() = 0;
         bool m_visible = true;
         std::string m_name = "Window";
+        gbs_opus::app *m_app;
     };
 
-    class window : element {
+    class window : public element {
     public:
-        explicit window(const std::string &name, int flags = 0) : element(name),
+        explicit window(gbs_opus::app *a, const std::string &name, int flags = 0) : element(a, name),
             m_flags(flags) { }
         void do_render() override;
         void set_size(ImVec2 size) { m_size = size; }
@@ -40,9 +48,9 @@ namespace gbs_opus::ui
 
     };
 
-    class mainmenu : element {
+    class mainmenu : public element {
     public:
-        explicit mainmenu(const std::string &name) : element(name) { }
+        mainmenu(gbs_opus::app *a, const std::string &name) : element(a, name) { }
         void do_render() override;
     };
 }

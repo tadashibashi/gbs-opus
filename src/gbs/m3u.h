@@ -1,7 +1,3 @@
-//
-// Created by Aaron Ishibashi on 11/19/22.
-//
-
 #ifndef GBS_OPUS_M3U_H
 #define GBS_OPUS_M3U_H
 #include <string>
@@ -14,6 +10,7 @@ namespace gbs_opus
         bool open(const std::string &path);
         void debug_log() const;
         int gbs_track_num;   // zero-based
+        int track_num;
         std::string album_title;
         std::string composer;
         std::string track_title;

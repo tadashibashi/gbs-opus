@@ -6,7 +6,7 @@
 #include "imgui_impl_sdl.h"
 #include "input/input.h"
 #include "ui/actions.h"
-#include "audio/engine.h"
+#include "audio/gbs_player.h"
 #include "implot.h"
 #include "imgui_impl_opengl3.h"
 #include <filesystem>
@@ -26,8 +26,9 @@ namespace gbs_opus
     {
         // Setup window
         const auto window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-
+        GPU_SetPreInitFlags(GPU_INIT_ENABLE_VSYNC);
         auto target = GPU_Init(1280, 720, window_flags);
+
         if (!target)
         {
             std::cerr << "Error initializaing SDL: " << SDL_GetError() << '\n';
@@ -41,14 +42,13 @@ namespace gbs_opus
         input::init();
         actions::init();
 
-        audio::engine::init(48000, 1024);
+
 
         return true;
     }
 
     void systems::shutdown()
     {
-        audio::engine::close();
         shutdown_imgui();
         input::close();
         if (s_target)
@@ -89,7 +89,7 @@ namespace gbs_opus
 
         style.WindowRounding = 8.0f;
         style.ChildRounding = 8.0f;
-        style.ScrollbarRounding = 7.f;
+        //style.ScrollbarRounding = 7.f;
 
         style.WindowTitleAlign = {.5f, .4f};
         style.DisplaySafeAreaPadding = {5.f, 4.f};
@@ -197,7 +197,7 @@ namespace gbs_opus
                 std::filesystem::directory_entry entry(ev.drop.file);
                 if (entry.exists() && entry.is_regular_file())
                 {
-                    audio::engine::load_gbs(ev.drop.file);
+
                 }
 
             }

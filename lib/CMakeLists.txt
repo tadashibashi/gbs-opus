@@ -14,7 +14,7 @@ add_custom_command(OUTPUT gbsplay/impulse.h gbsplay/config.h
 
 add_library(gbsplay
         gbsplay/gbcpu.c  gbsplay/gbhw.c  gbsplay/mapper.c  gbsplay/gbs.c  gbsplay/crc32.c
-        gbsplay/util.c gbsplay/plugout.c gbsplay/player.c gbsplay/cfgparser.c
+        gbsplay/util.c gbsplay/plugout.c gbsplay/cfgparser.c
         gbsplay/plugout_wav.c gbsplay/plugout_vgm.c gbsplay/plugout_stdout.c
         gbsplay/plugout_altmidi.c gbsplay/plugout_iodumper.c gbsplay/plugout_sdl.c
         gbsplay/plugout_midi.c gbsplay/midifile.c gbsplay/filewriter.c

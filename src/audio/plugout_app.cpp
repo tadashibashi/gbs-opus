@@ -7,7 +7,7 @@ extern "C" {
 }
 
 
-#include "engine.h"
+#include "gbs_player.h"
 
 #define PLAYBACK_MODE      0
 #define NO_CHANGES_ALLOWED 0
@@ -21,7 +21,7 @@ extern "C" {
 
 namespace gbs_opus
 {
-    static int device;
+    static int device = 0;
     static SDL_AudioSpec obtained;
 
     float sdl_volume = .5f;
@@ -47,6 +47,9 @@ namespace gbs_opus
             default:                    desired.format = AUDIO_S16SYS; break;
         }
 
+        if (device)
+            SDL_CloseAudioDevice(device);
+
         device = SDL_OpenAudioDevice(NULL, PLAYBACK_MODE, &desired, &obtained, SDL_FLAGS);
         if (device == 0) {
             fprintf(stderr, _("Could not open SDL audio device: %s\n"), SDL_GetError());
@@ -65,17 +68,12 @@ namespace gbs_opus
         float delaynanos = (float)overqueued / 4.0 / obtained.freq * 1000000000.0;
         struct timespec interval = {.tv_sec = 0, .tv_nsec = (long)delaynanos};
         if (overqueued > 0) {
-            nanosleep(&interval, NULL);
+            nanosleep(&interval, nullptr);
         }
 
-        for (int i = 0; i < count/2 && i < audio::engine::buffer_size(); ++i)
-        {
-            audio::engine::s_buffer[i] = static_cast<const int16_t *>(buf)[i];
-        }
         SDL_MixAudioFormat((uint8_t *)buf, (uint8_t *)buf, AUDIO_S16SYS, count,
                            sdl_volume * SDL_MIX_MAXVOLUME * 2 - SDL_MIX_MAXVOLUME);
 
-        if (audio::engine::s_speed > .5f)
         if (SDL_QueueAudio(device, buf, count) != 0) {
             fprintf(stderr, _("Could not write SDL audio data: %s\n"), SDL_GetError());
             return -1;
@@ -85,6 +83,22 @@ namespace gbs_opus
         return count;
     }
 
+    static void sdl_pause(int pause)
+    {
+        if (pause)
+        {
+            SDL_PauseAudio(true);
+
+            // be sure audio thread is not active
+            SDL_LockAudio();
+            SDL_UnlockAudio();
+        }
+        else
+        {
+            SDL_PauseAudio(false);
+        }
+    }
+
     static void sdl_close()
     {
         SDL_AudioQuit();
@@ -92,9 +106,10 @@ namespace gbs_opus
 
     extern const output_plugin plugout_app = {
             .name = "app",
-            .description = "SDL sound driver",
+            .description = "Uses SDL sound driver",
             .open = sdl_open,
             .write = sdl_write,
+            .pause = sdl_pause,
             .close = sdl_close,
     };
 

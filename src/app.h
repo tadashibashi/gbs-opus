@@ -1,26 +1,25 @@
-//
-// Created by Aaron Ishibashi on 11/16/22.
-//
-
 #ifndef GBS_OPUS_APP_H
 #define GBS_OPUS_APP_H
-#include "ui/app_ui.h"
 
 namespace gbs_opus
 {
     class app {
     public:
-        app() = default;
+        app();
         ~app() = default;
         void run();
 
+        class gbs_player *player() { return m_player; }
     private:
         void run_frame();
         void update();
         void draw();
 
-        menu_ui m_menu;
-        control_ui m_scope;
+        // class menu_ui *m_menu;
+        class control_ui *m_ctrl_ui;
+        class gbs_player *m_player;
+
+        bool m_running = false;
     };
 }
 

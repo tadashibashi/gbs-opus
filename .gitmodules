@@ -5,12 +5,15 @@
 	path = lib/nativefiledialog
 	url = https://github.com/mlabbe/nativefiledialog.git
 	ignore = dirty
-[submodule "lib/gbsplay"]
-	path = lib/gbsplay
-	url = https://github.com/tadashibashi/gbsplay.git
 [submodule "lib/implot"]
 	path = lib/implot
 	url = https://github.com/epezent/implot.git
 [submodule "lib/sdl-gpu"]
 	path = lib/sdl-gpu
 	url = https://github.com/tadashibashi/sdl-gpu.git
+[submodule "lib/gbsplay"]
+	path = lib/gbsplay
+	url = https://github.com/tadashibashi/gbsplay.git
+[submodule "lib/json"]
+	path = lib/json
+	url = https://github.com/nlohmann/json.git

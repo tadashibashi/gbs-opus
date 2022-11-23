@@ -7,9 +7,10 @@ class GPU_Image;
 
 namespace gbs_opus
 {
+
 class menu_ui : public ui::mainmenu {
 public:
-    menu_ui() : ui::mainmenu("Main Menu") { }
+    menu_ui(gbs_opus::app *a) : ui::mainmenu(a, "Main Menu") { }
 private:
         void render() override;
         void show_menu_file();
@@ -17,7 +18,7 @@ private:
 
 class control_ui : public ui::window {
 public:
-    control_ui();
+    control_ui(gbs_opus::app *a);
     void init();
     ~control_ui();
 private:

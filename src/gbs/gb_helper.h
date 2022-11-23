@@ -2,7 +2,7 @@
 #define GBS_OPUS_GB_HELPER_H
 
 #include <cmath>
-#include "player.h"
+#include "audio/gbs_player.h"
 
 const int MIDI_OFFSET = 21;
 const int OCTAVE_NOTE_COUNT = 12;
