@@ -75,17 +75,94 @@ namespace gbs_opus
     static MemoryEditor memedit;
     extern float sdl_volume;
 
-    static const int ScopeTrailSize = 1;
-    static const int ScopeBufferDiv = 2;
+    static const int ScopeTrailSize = 3;
+    static const int ScopeBufferDiv = 3;
     static std::atomic_int currentScopeIndex = 0;
 
     static const int ControlWindowWidth = 400;
+
+    bool operator!=(ImVec2 a, ImVec2 b) { return a.x != b.x || a.y != b.y; }
+
+    class volume_button
+    {
+    public:
+        volume_button() : is_muted(), mouse_moved(), hover_counter() {}
+
+        void display(float *f)
+        {
+            float delta = ImGui::GetIO().DeltaTime;
+
+            if (ImGui::BeginPopup("VolumePopup", ImGuiWindowFlags_NoMove))
+            {
+                if (!mouse_moved)
+                {
+                    if ((!ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
+                         ImGui::GetIO().MouseDelta != ImVec2{0, 0}) &&
+                        !ImGui::GetIO().MouseDown[0])
+                    {
+                        mouse_moved = true;
+                    }
+                }
+                else if (mouse_moved && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
+                         !ImGui::GetIO().MouseDown[0])
+                {
+                    if (hover_counter <= 0)
+                    {
+                        ImGui::CloseCurrentPopup();
+                        hover_counter = 0;
+                    }
+
+                    hover_counter -= delta * 2;
+                }
+
+                ImGui::VSliderFloat("##VolumeSlider", {8.f, 64.f}, f, 0, 1.f, "");
+
+                ImGui::EndPopup();
+            }
+
+            if (sdl_volume == 0)
+            {
+                if (ImGui::Button("X", {18, 18}))
+                {
+                    ImGui::OpenPopup("VolumePopup");
+                    mouse_moved = false;
+                }
+            }
+            else
+            {
+                if (ImGui::Button("Vol", {18, 18}))
+                {
+                    ImGui::OpenPopup("VolumePopup");
+                    mouse_moved = false;
+                }
+            }
+
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !is_muted)
+            {
+                if (hover_counter < .5f)
+                {
+                    hover_counter += delta;
+                }
+                else
+                {
+                    ImGui::OpenPopup("VolumePopup");
+                    mouse_moved = false;
+                }
+            }
+        }
+    private:
+        bool is_muted, mouse_moved;
+        float hover_counter;
+    };
+
+    volume_button vol_button;
 
     void control_ui::render()
     {
         ImGui::ShowDemoWindow();
         auto &player = *app()->player();
 
+#pragma region MenuBar
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -145,7 +222,9 @@ namespace gbs_opus
             }
             ImGui::EndMenuBar();
         }
+#pragma endregion
 
+#pragma region Header
         const char *title = "Title", *author = "Composer", *copyright = "", *song_title = "";
         double ch1_midi = 0;
         int subsong = 0;
@@ -203,24 +282,14 @@ namespace gbs_opus
             ImGui::Text("%s", title);
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
             ImGui::Text("by %s", author);
+#pragma endregion
 
+#pragma region Oscilloscope
             // OSCILLOSCOPE
             if (m_show_scope)
             {
                 auto bufsize = player.driver()->buffer_size();
                 const int ScopeSampleLength = (int)bufsize / ScopeBufferDiv;
-
-                // Copy data into current line group
-//                if (player.is_loaded())
-//                {
-//                    for (int i = 0; i < ScopeSampleLength; ++i)
-//                    {
-//                        scope_display[currentScopeIndex][i] =
-//                                (float)player.buffer()[i];
-//                    }
-//                }
-
-
 
                 // Display the Scope
                 if (ImPlot::BeginPlot("Scope", {-1, 64}, ImPlotFlags_NoFrame | ImPlotFlags_CanvasOnly |
@@ -237,7 +306,7 @@ namespace gbs_opus
 
                     for (int i = 0, visiting = wrap(currentScopeIndex - 1, 0, ScopeTrailSize-1); i < ScopeTrailSize; ++i)
                     {
-                        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 1.f-((float)i/(float)ScopeTrailSize));
+                        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, ((float)i/(float)ScopeTrailSize));
 
                         ImPlot::PlotLine(("scope_"+std::to_string(i)).c_str(),
                                          scope_display[visiting].data(), scope_display[visiting].size(),
@@ -254,8 +323,11 @@ namespace gbs_opus
                 }
 
             }
+#pragma endregion
 
 
+
+#pragma region TrackControls
             ImGui::SetCursorPos({ImGui::GetCursorPosX() + offset_x, ImGui::GetCursorPosY() - 4});
 
             // TRACK CONTROLS
@@ -301,12 +373,18 @@ namespace gbs_opus
             {
                 player.play_next();
             }
+
+            vol_button.display(&sdl_volume);
+
+
             ImGui::PopStyleVar();
 
             ImGui::EndTable();
         }
 
         ImGui::SetCursorPosY(236.f);
+#pragma endregion
+
 
 
 #pragma region MoreInfo
@@ -354,7 +432,9 @@ namespace gbs_opus
                 if (ImGui::BeginTabItem("Spec"))
                 {
                     // Idea: Pages where you can scroll for more info
-                    ImGui::Text("GBS Version: %d", player.meta()->gbs_version());
+                    auto gbs_vers = player.driver()->gbs_version();
+                    if (gbs_vers != 0)
+                        ImGui::Text("GBS Version: %d", gbs_vers);
                     ImGui::TextWrapped("Lorem ipsum dolor sit amet");
                     ImGui::EndTabItem();
                 }
@@ -406,6 +486,7 @@ namespace gbs_opus
 
         //ImGui::Separator();
 
+#pragma region Tracklist
         ImGui::SetCursorPosX(0);
         if (ImGui::BeginTable("Tracks", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_BordersH |
             ImGuiTableFlags_NoBordersInBody, {-1, 300}))
@@ -418,6 +499,8 @@ namespace gbs_opus
             {
                 for (int i = 0; i < player.meta()->tracks().size(); ++i)
                 {
+
+
                     auto selected = player.current_track() == i;
                     auto &io = ImGui::GetIO();
                     auto &track = player.meta()->tracks()[i];
@@ -425,19 +508,31 @@ namespace gbs_opus
                     auto winsize = ImGui::GetWindowSize();
                     auto cpos = ImGui::GetCursorPos();
                     auto clickPos = io.MouseClickedPos[0];
+                    auto mousePos = io.MousePos;
                     float scrolly = ImGui::GetScrollY();
-                    if (io.MouseDoubleClicked[0] &&
-                        clickPos.x - winpos.x > 0 &&
-                        clickPos.x - winpos.x < winsize.x &&
-                        clickPos.y - winpos.y + scrolly > cpos.y &&
-                        clickPos.y - winpos.y + scrolly < cpos.y + 32)
-                        player.play_track(i);
+                    bool hilighted = false;
+                    if (mousePos.x - winpos.x > 0 &&
+                        mousePos.x - winpos.x < winsize.x-16 && // -16 to keep out scroll bar
+                        mousePos.y - winpos.y + scrolly > cpos.y &&
+                        mousePos.y - winpos.y + scrolly < cpos.y + 32)
+                    {
+                        if (io.MouseClicked[0])
+                        {
+                            player.play_track(i);
+                        }
+                        else
+                            hilighted = true;
+
+                    }
+
 
                     ImGui::TableNextRow(0, 32);
                     if (selected)
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, 0xFF222222);
+                    else if (hilighted)
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, 0xFF111111);
                     else
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, 0xFF0A0A0A);
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, 0xFF0a0a0a);
 
                     ImGui::TableNextColumn();
 
@@ -460,7 +555,7 @@ namespace gbs_opus
             ImGui::EndTable();
         }
 
-
+#pragma endregion
 
 
 
@@ -585,24 +680,30 @@ namespace gbs_opus
         set_flags(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_MenuBar);
         // Initialize scope
         scope_display.reserve(ScopeTrailSize);
+        auto bufsize = app()->player()->driver()->buffer_size();
         for (int i = 0; i < ScopeTrailSize; ++i)
         {
             auto &lines = scope_display.emplace_back();
-            auto bufsize = app()->player()->driver()->buffer_size();
             lines.reserve(bufsize / ScopeBufferDiv);
             lines.assign(bufsize / ScopeBufferDiv, 0);
         }
-        static int buf_counter;
+        static int bufcounter;
         static std::function<void(void*,size_t)> write_cb =
                 [](void *buf, size_t count)
                 {
-                    if (buf_counter % 4 == 0)
-                        for (int i = 0; i < scope_display[currentScopeIndex].size() && i < count/2; ++i)
+                        if (bufcounter % 4)
                         {
-                            scope_display[currentScopeIndex][i] = (float)((int16_t *)buf)[i];
+                            for (int i = 0; i < scope_display[currentScopeIndex].size() && i < count/2; ++i)
+                            {
+                                if (i % ScopeBufferDiv != 0) continue;
+
+                                scope_display[currentScopeIndex][i] = (float)((int16_t *)buf)[i];
+
+                            }
                             currentScopeIndex = (currentScopeIndex + 1) % ScopeTrailSize;
                         }
-                    buf_counter = (buf_counter + 1) % 4;
+
+                        bufcounter = (bufcounter + 1) % 4;
                 };
         app()->player()->driver()->on_write.add_listener(&write_cb);
 

@@ -1,55 +1,10 @@
 #include "gbs_player.h"
-#include "input/input.h"
-#include <SDL_audio.h>
-#include <iostream>
+#include "plugout_driver.h"
 
-extern "C" {
-#include "libgbs.h"
-#include "player.h"
-#include "plugout.h"
-#include "gbs_internal.h"
-}
-#include "mathf.h"
-#include "gbs/m3u.h"
+#include <gbs/libgbs.hpp>
 #include <gbs/gbs_driver.h>
 #include <vector>
-
 #include <filesystem>
-
-
-// ====== not sure if we need this section
-#define CFG_FILTER_OFF "off"
-#define CFG_FILTER_DMG "dmg"
-#define CFG_FILTER_CGB "cgb"
-
-struct filter_map {
-    const char *name;
-    enum gbs_filter_type type;
-};
-
-static const char *sound_name = PLUGOUT_DEFAULT;
-static const char *filter_type = CFG_FILTER_DMG;
-static const struct filter_map FILTERS[] = {
-        { CFG_FILTER_OFF, FILTER_OFF },
-        { CFG_FILTER_DMG, FILTER_DMG },
-        { CFG_FILTER_CGB, FILTER_CGB },
-        { nullptr, static_cast<gbs_filter_type>(-1)},
-};
-// =================================================
-
-
-
-#define DEFAULT_REFRESH_DELAY 33
-long refresh_delay = DEFAULT_REFRESH_DELAY; /* msec */
-
-static const plugout_endian RequestedEndian = PLUGOUT_ENDIAN_AUTOSELECT;
-static plugout_endian ActualEndian = PLUGOUT_ENDIAN_AUTOSELECT;
-
-static timespec pause_wait_time;
-const char *sound_description;
-extern const struct output_plugin plugout_midi;
-
-#include "plugout_driver.h"
 
 namespace gbs_opus
 {
@@ -137,7 +92,7 @@ namespace gbs_opus
         m->playlist.init(&m->meta);
         m->driver.set_subsoundinfo(m->meta);
 
-        play_track(0);
+        play_track(-1);
         return true;
     }
 
@@ -178,7 +133,19 @@ namespace gbs_opus
 
     bool gbs_player::play_track(int t)
     {
-        return m->driver.play_song(m->playlist.goto_track(t));
+        m->driver.set_paused(false);
+
+        if (t == -1)
+        {
+            auto song_index = m->driver.song_index();
+            auto it = std::find_if(m->meta.tracks().begin(), m->meta.tracks().end(),
+                                   [song_index](const gbs_meta::track_meta &track) { return track.track == song_index; });
+            if (it != m->meta.tracks().end())
+                m->playlist.goto_track(it - m->meta.tracks().begin());
+            return m->driver.play_song(song_index);
+        }
+        else
+            return m->driver.play_song(m->playlist.goto_track(t));
     }
 
     bool gbs_player::is_loaded() const {

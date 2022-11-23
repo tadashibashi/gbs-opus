@@ -19,9 +19,9 @@ namespace gbs_opus
             m_ctrl_ui = new control_ui{this};
             m_player = new gbs_player;
 
-
-            m_ctrl_ui->init();
             m_player->init(48000, 512);
+            m_ctrl_ui->init();
+
 
             m_running = true;
             while (!systems::should_quit() && m_running )

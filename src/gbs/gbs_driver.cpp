@@ -48,7 +48,7 @@ namespace gbs_opus
         return true;
     }
 
-    bool gbs_driver::load_gbs(const char *filepath) {
+    bool gbs_driver::load_gbs(const char *filepath, int starting_song) {
         struct gbs *temp_gbs = gbs_open(filepath);
         if (!temp_gbs)
         {
@@ -63,7 +63,7 @@ namespace gbs_opus
         gbs_set_nextsubsong_cb(temp_gbs, nextsubsong_callback_handler, this);
 
         gbs_configure_output(temp_gbs, &m->buffer, m->plugout.sample_rate());
-        gbs_configure(temp_gbs, 0, 120 * 3, 5, 0, 2);
+        gbs_configure(temp_gbs, starting_song, 120 * 3, 5, 0, 2);
 
         /// TODO: Make filter configurable
         gbs_set_filter(temp_gbs, gbs_filter_type::FILTER_DMG);
@@ -85,6 +85,7 @@ namespace gbs_opus
 
 #pragma region Setters & Getters
     int gbs_driver::gbs_version() const {
+        if (!m->gbs) return 0;
         assert(m->gbs);
         return gbs_get_version(m->gbs);
     }
@@ -231,7 +232,7 @@ namespace gbs_opus
         std::filesystem::directory_entry entry(fspath.parent_path().string() + "/" + meta.filename);
         if (entry.exists() && entry.is_regular_file())
         {
-            return load_gbs(entry.path().c_str());
+            return load_gbs(entry.path().c_str(), meta.gbs_track_num);
         }
 
         std::cerr << "Associated gbs file could not be found for m3u at " <<
@@ -342,6 +343,13 @@ namespace gbs_opus
         driver->on_nextsong.try_invoke();
         return 0;
     }
+
+    int gbs_driver::song_index() const {
+        if (!m->gbs) return -1;
+
+        return gbs_get_status(m->gbs)->subsong;
+    }
+
 #pragma endregion
 
 

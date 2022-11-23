@@ -203,9 +203,9 @@ struct MemoryEditor
                 ImGui::SetWindowSize(ImVec2(s.WindowWidth, ImGui::GetWindowSize().y));
             }
 
-            ImGui::End();
-        }
 
+        }
+        ImGui::End();
     }
 
     // Memory Editor contents only

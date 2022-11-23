@@ -1,4 +1,8 @@
 add_subdirectory(SDL)
+
+set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SDL/include)
+set(SDL2_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/SDL)
+
 add_subdirectory(sdl-gpu)
 
 add_library(imgui

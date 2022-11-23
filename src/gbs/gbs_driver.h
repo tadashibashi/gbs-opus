@@ -38,6 +38,8 @@ namespace gbs_opus
         [[nodiscard]] bool is_open() const;
         [[nodiscard]] bool is_paused() const;
 
+        [[nodiscard]] int song_index() const;
+
         /// Gets time played in the current track in seconds
         [[nodiscard]] float tracktime_played() const;
         /// Gets total length of the current track in seconds
@@ -75,7 +77,7 @@ namespace gbs_opus
 
         delegate<void()> on_nextsong;
     private:
-        bool load_gbs(const char *filepath);
+        bool load_gbs(const char *filepath, int starting_song = 0);
         bool load_m3u(const char *filepath);
         bool step_emulation();
         impl *m;
