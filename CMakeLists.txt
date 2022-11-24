@@ -1,13 +1,18 @@
 cmake_minimum_required(VERSION 3.23)
-project(gbs_opus)
+
+if (APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
+    project(gbs_opus C CXX)
+else()
+    project(gbs_opus C CXX)
+endif()
+
 
 set(CMAKE_CXX_STANDARD 17)
 
-if (APPLE)
-    SET(MACOSX_DEPLOYMENT_TARGET ${DARWIN_MAJOR_SDK_VERSION}.${DARWIN_MINOR_SDK_VERSION})
-    SET(CMAKE_CXX_FLAGS "--sysroot ${CMAKE_OSX_SYSROOT} ${CMAKE_CXX_FLAGS}")
-    MESSAGE("Setting MACOSX_DEPLOYMENT_TARGET to '${MACOSX_DEPLOYMENT_TARGET}'.")
-endif()
+
+
+
 
 
 # Submodules
@@ -27,7 +32,7 @@ add_executable(gbs_opus src/main.cpp src/audio/plugout_app.cpp src/systems.h src
         src/gbs/m3u.cpp src/gbs/m3u.h src/gbs/gbs_meta.cpp src/gbs/gbs_meta.h src/audio/plugout_driver.cpp
         src/audio/plugout_driver.h src/delegate.inl src/delegate.h
         src/audio/playlist.cpp src/audio/playlist.h src/gbs/meta_io.cpp
-        src/gbs/meta_io.h src/gbs/libgbs.hpp src/mathf.cpp src/mathf.h src/gbs/gbs_driver.cpp src/gbs/gbs_driver.h src/gbs/impl/gbs_driver_impl.cpp src/gbs/impl/gbs_driver_impl.h)
+        src/gbs/meta_io.h src/gbs/libgbs.hpp src/mathf.cpp src/mathf.h src/gbs/gbs_driver.cpp src/gbs/gbs_driver.h src/gbs/impl/gbs_driver_impl.cpp src/gbs/impl/gbs_driver_impl.h src/ui/volume_button.h src/ui/ui.h src/image.cpp src/image.h)
 
 
 # Platform Libraries
@@ -42,7 +47,7 @@ elseif(WIN32)
 endif()
 
 target_link_directories(gbs_opus PRIVATE lib/nativefiledialog/build/lib/Release/x64)
-target_link_libraries(gbs_opus PRIVATE SDL2 ${PLATFORM_LIBS} imgui gbsplay SDL_gpu)
+target_link_libraries(gbs_opus PRIVATE SDL2 ${PLATFORM_LIBS} imgui libgbs SDL_gpu)
 target_include_directories(gbs_opus PRIVATE
         lib/SDL/include lib/nativefiledialog/src/include src lib/gbsplay
         lib/implot lib/json lib/sdl-gpu/include lib/json/include)
@@ -55,3 +60,4 @@ target_include_directories(gbs_opus PRIVATE
 #            RESOURCE "${RESOURCE_FILES}"
 #            )
 #endif()
+

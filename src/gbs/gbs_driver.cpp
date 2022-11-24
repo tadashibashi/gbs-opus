@@ -126,7 +126,8 @@ namespace gbs_opus
 
     float gbs_driver::tracktime_played() const
     {
-        assert(m->gbs);
+        if (!m->gbs) return 0;
+
         auto time = (long double)gbs_get_status(m->gbs)->ticks;
 
         if (time == 0)

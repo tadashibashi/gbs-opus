@@ -38,12 +38,21 @@ namespace gbs_opus
         while(SDL_PollEvent(&ev))
         {
             ImGui_ImplSDL2_ProcessEvent(&ev);
-            if (ev.type == SDL_QUIT)
-                on_quit.try_invoke(ev.quit);
-            if (ev.type == SDL_WINDOWEVENT && ev.window.event == SDL_WINDOWEVENT_CLOSE)
-                on_windowclose.try_invoke(ev.window);
-            if (ev.type == SDL_DROPFILE)
-                on_dropfile.invoke(ev.drop);
+            switch(ev.type)
+            {
+                case SDL_QUIT:
+                    on_quit.try_invoke(ev.quit);
+                    break;
+                case SDL_WINDOWEVENT:
+                    if (ev.window.event == SDL_WINDOWEVENT_CLOSE)
+                        on_windowclose.try_invoke(ev.window);
+                    if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+                        SDL_Log("Resized window! %d by %d", ev.window.data1, ev.window.data2);
+                    break;
+                case SDL_DROPFILE:
+                    on_dropfile.invoke(ev.drop);
+                    break;
+            }
         }
 
         int x, y;

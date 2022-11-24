@@ -92,7 +92,7 @@ namespace gbs_opus
         m->playlist.init(&m->meta);
         m->driver.set_subsoundinfo(m->meta);
 
-        play_track(-1);
+        play_track(-128);
         return true;
     }
 
@@ -135,7 +135,7 @@ namespace gbs_opus
     {
         m->driver.set_paused(false);
 
-        if (t == -1)
+        if (t == -128)
         {
             auto song_index = m->driver.song_index();
             auto it = std::find_if(m->meta.tracks().begin(), m->meta.tracks().end(),

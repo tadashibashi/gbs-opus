@@ -5,17 +5,9 @@
 
 #include "systems.h"
 
-#include <iostream>
-#include <vector>
+
 #include "actions.h"
 #include "imgui_memory_editor.h"
-extern "C" {
-#include <libgbs.h>
-#include <gbhw.h>
-}
-#include <atomic>
-
-#include "gbs/gb_helper.h"
 
 #include "input/input.h"
 
@@ -23,16 +15,19 @@ extern "C" {
 
 #include <filesystem>
 
-#include <SDL_gpu.h>
-
+#include <ui/volume_button.h>
 #include "mathf.h"
+
+#include <iostream>
+#include <vector>
+#include <atomic>
 
 long mute_channel[4];
 
 
 namespace gbs_opus
 {
-    static void TextCentered(std::string text, float percentage = .5f) {
+    static void TextCentered(const std::string &text, float percentage = .5f) {
         auto windowWidth = ImGui::GetWindowSize().x;
         auto textWidth   = ImGui::CalcTextSize(text.c_str()).x;
 
@@ -40,40 +35,9 @@ namespace gbs_opus
         ImGui::Text("%s", text.c_str());
     }
 
-    void menu_ui::render()
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-
-            show_menu_file();
-            ImGui::EndMenu();
-        }
-    }
-
-    void menu_ui::show_menu_file()
-    {
-        if (ImGui::MenuItem("Open", "Ctrl+O"))
-        {
-//            if (is_running()) toggle_pause();
-//            gbs_player::set_pause(true);
-//            auto path = actions::open_file_dialog();
-//            gbs_player::load_gbs(path);
-        }
-
-        ImGui::Separator();
-
-        if (ImGui::MenuItem("Quit", "Ctrl+Q"))
-        {
-            systems::quit();
-        }
-    }
-
-
-
     std::vector<std::vector<float>> scope_display;
 
     static MemoryEditor memedit;
-    extern float sdl_volume;
 
     static const int ScopeTrailSize = 3;
     static const int ScopeBufferDiv = 3;
@@ -81,80 +45,7 @@ namespace gbs_opus
 
     static const int ControlWindowWidth = 400;
 
-    bool operator!=(ImVec2 a, ImVec2 b) { return a.x != b.x || a.y != b.y; }
-
-    class volume_button
-    {
-    public:
-        volume_button() : is_muted(), mouse_moved(), hover_counter() {}
-
-        void display(float *f)
-        {
-            float delta = ImGui::GetIO().DeltaTime;
-
-            if (ImGui::BeginPopup("VolumePopup", ImGuiWindowFlags_NoMove))
-            {
-                if (!mouse_moved)
-                {
-                    if ((!ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
-                         ImGui::GetIO().MouseDelta != ImVec2{0, 0}) &&
-                        !ImGui::GetIO().MouseDown[0])
-                    {
-                        mouse_moved = true;
-                    }
-                }
-                else if (mouse_moved && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
-                         !ImGui::GetIO().MouseDown[0])
-                {
-                    if (hover_counter <= 0)
-                    {
-                        ImGui::CloseCurrentPopup();
-                        hover_counter = 0;
-                    }
-
-                    hover_counter -= delta * 2;
-                }
-
-                ImGui::VSliderFloat("##VolumeSlider", {8.f, 64.f}, f, 0, 1.f, "");
-
-                ImGui::EndPopup();
-            }
-
-            if (sdl_volume == 0)
-            {
-                if (ImGui::Button("X", {18, 18}))
-                {
-                    ImGui::OpenPopup("VolumePopup");
-                    mouse_moved = false;
-                }
-            }
-            else
-            {
-                if (ImGui::Button("Vol", {18, 18}))
-                {
-                    ImGui::OpenPopup("VolumePopup");
-                    mouse_moved = false;
-                }
-            }
-
-            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup) && !is_muted)
-            {
-                if (hover_counter < .5f)
-                {
-                    hover_counter += delta;
-                }
-                else
-                {
-                    ImGui::OpenPopup("VolumePopup");
-                    mouse_moved = false;
-                }
-            }
-        }
-    private:
-        bool is_muted, mouse_moved;
-        float hover_counter;
-    };
-
+    extern float sdl_volume;
     volume_button vol_button;
 
     void control_ui::render()
@@ -172,23 +63,12 @@ namespace gbs_opus
                     auto path = std::filesystem::path(actions::open_file_dialog());
                     player.load(path);
 
-                    if (m_art)
-                        GPU_FreeImage(m_art);
-                    m_art = nullptr;
-
                     // Find .png, or .bmp
                     for (const auto& entry : std::filesystem::directory_iterator {path.parent_path()})
                     {
                         if (entry.path().extension() == ".png" || entry.path().extension() == ".bmp")
                         {
-                            auto img = GPU_LoadImage(entry.path().c_str());
-                            if (!img)
-                            {
-                                std::cerr << "Error: Failed to load image!\n";
-                                continue;
-                            }
-
-                            m_art = img;
+                            m_art.load(entry.path());
                             break;
                         }
                     }
@@ -259,9 +139,8 @@ namespace gbs_opus
             ImGui::TableNextColumn();
 
             // ALBUM ART
-            if (m_art)
+            if (m_art.is_loaded())
             {
-                auto texid = GPU_GetTextureHandle(m_art);
                 auto winpos = ImGui::GetWindowPos();
                 auto winscroll = ImGui::GetScrollY();
                 const ImVec2 pmin{winpos.x + 12, winpos.y + 44 - winscroll};
@@ -269,7 +148,7 @@ namespace gbs_opus
                 ImVec2 uvmin{0,0}, uvmax{1,1};
 
                 ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
-                ImGui::GetWindowDrawList()->AddImageRounded((ImTextureID)texid, pmin, pmax, uvmin, uvmax, 0xFFFFFFFF, 10.f);
+                ImGui::GetWindowDrawList()->AddImageRounded((ImTextureID)m_art.id(), pmin, pmax, uvmin, uvmax, 0xFFFFFFFF, 10.f);
                 ImGui::PopStyleVar();
 
             }
@@ -306,11 +185,11 @@ namespace gbs_opus
 
                     for (int i = 0, visiting = wrap(currentScopeIndex - 1, 0, ScopeTrailSize-1); i < ScopeTrailSize; ++i)
                     {
-                        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, ((float)i/(float)ScopeTrailSize));
+                        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, ((float)i/(float)ScopeTrailSize) * -.2f);
 
                         ImPlot::PlotLine(("scope_"+std::to_string(i)).c_str(),
                                          scope_display[visiting].data(), scope_display[visiting].size(),
-                                         1, 0, ImPlotLineFlags_Shaded, 0);
+                                         1, 0, ImPlotLineFlags_None, 0);
                         ImPlot::PopStyleVar();
                         visiting = wrap(visiting - 1, 0, ScopeTrailSize-1);
                     }
@@ -341,10 +220,17 @@ namespace gbs_opus
 
             ImGui::SetCursorPos({ImGui::GetCursorPosX() + 8.f, ImGui::GetCursorPosY() + 4.f});
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.f);
-            if (ImGui::Button("|<", {36, 18}))
+
+
+            if (ImGui::Button("|<<", {36, 18}))
             {
-                app()->player()->play_track(app()->player()->current_track());
+
+                if (player.driver()->tracktime_played() < 3.f)
+                    player.play_prev();
+                else
+                    player.play_track(app()->player()->current_track());
             }
+
             ImGui::SameLine();
             if (!player.is_running())
             {
@@ -362,11 +248,6 @@ namespace gbs_opus
 
             }
 
-            ImGui::SameLine();
-            if (ImGui::Button("|<<", {36, 18}))
-            {
-                player.play_prev();
-            }
 
             ImGui::SameLine();
             if (ImGui::Button(">>|", {36, 18}))
@@ -374,6 +255,7 @@ namespace gbs_opus
                 player.play_next();
             }
 
+            ImGui::SameLine();
             vol_button.display(&sdl_volume);
 
 
@@ -488,8 +370,9 @@ namespace gbs_opus
 
 #pragma region Tracklist
         ImGui::SetCursorPosX(0);
+        const float TrackListHeight = 300.f;
         if (ImGui::BeginTable("Tracks", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_BordersH |
-            ImGuiTableFlags_NoBordersInBody, {-1, 300}))
+            ImGuiTableFlags_NoBordersInBody, {-1, TrackListHeight}))
         {
             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, 0x22FFFFFF);
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 32);
@@ -497,21 +380,21 @@ namespace gbs_opus
 
             if (player.is_loaded())
             {
+                auto tracklist_pos = ImGui::GetCursorPos();
                 for (int i = 0; i < player.meta()->tracks().size(); ++i)
                 {
-
-
                     auto selected = player.current_track() == i;
                     auto &io = ImGui::GetIO();
                     auto &track = player.meta()->tracks()[i];
                     auto winpos = ImGui::GetWindowPos();
                     auto winsize = ImGui::GetWindowSize();
                     auto cpos = ImGui::GetCursorPos();
-                    auto clickPos = io.MouseClickedPos[0];
+                    //auto clickPos = io.MouseClickedPos[0];
                     auto mousePos = io.MousePos;
                     float scrolly = ImGui::GetScrollY();
                     bool hilighted = false;
-                    if (mousePos.x - winpos.x > 0 &&
+                    if (!vol_button.is_popup_open() && mousePos.y - winpos.y > tracklist_pos.y && mousePos.y - winpos.y < tracklist_pos.y + TrackListHeight &&
+                        mousePos.x - winpos.x > 0 &&
                         mousePos.x - winpos.x < winsize.x-16 && // -16 to keep out scroll bar
                         mousePos.y - winpos.y + scrolly > cpos.y &&
                         mousePos.y - winpos.y + scrolly < cpos.y + 32)
@@ -724,9 +607,6 @@ namespace gbs_opus
 
     control_ui::~control_ui()
     {
-        if (m_art)
-        {
-            GPU_FreeImage(m_art);
-        }
+        m_art.close();
     }
 }
