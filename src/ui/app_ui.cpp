@@ -61,17 +61,21 @@ namespace gbs_opus
                 if (ImGui::MenuItem("Open", "Ctrl+O"))
                 {
                     auto path = std::filesystem::path(actions::open_file_dialog());
-                    player.load(path);
-
-                    // Find .png, or .bmp
-                    for (const auto& entry : std::filesystem::directory_iterator {path.parent_path()})
+                    if (std::filesystem::exists(path))
                     {
-                        if (entry.path().extension() == ".png" || entry.path().extension() == ".bmp")
+                        player.load(path);
+
+                        // Find .png, or .bmp
+                        for (const auto& entry : std::filesystem::directory_iterator {path.parent_path()})
                         {
-                            m_art.load(entry.path());
-                            break;
+                            if (entry.path().extension() == ".png" || entry.path().extension() == ".bmp")
+                            {
+                                m_art.load(entry.path());
+                                break;
+                            }
                         }
                     }
+
 
 
 

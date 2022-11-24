@@ -15,35 +15,19 @@ namespace gbs_opus
 {
     int filter_event(void *userdata, SDL_Event *event)
     {
-        if (event->type == SDL_WINDOWEVENT)
+        if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED)
         {
-            if  (event->window.event == SDL_WINDOWEVENT_RESIZED)
-            {
-                auto a = static_cast<app *>(userdata);
-                winmutex.lock();
-                systems::start_frame();
-                a->update();
-                a->player()->update();
+            auto a = static_cast<app *>(userdata);
+            winmutex.lock();
+            systems::start_frame();
+            a->update();
 
-                systems::clear(10, 10, 10);
-                a->draw();
-                systems::present();
-                a->m_resized = true;
-                winmutex.unlock();
-
-            }
-            if (event->window.event == SDL_WINDOWEVENT_ENTER)
-                std::cout << "Entered!\n";
-            if (event->window.event == SDL_WINDOWEVENT_LEAVE)
-                std::cout << "Left\n";
-
+            systems::clear(10, 10, 10);
+            a->draw();
+            systems::present();
+            a->m_resized = true;
+            winmutex.unlock();
             return 0;
-        }
-
-        if (event->type == SDL_QUIT)
-        {
-            std::cout << "quit!\n";
-            return 1;
         }
 
         return 1;

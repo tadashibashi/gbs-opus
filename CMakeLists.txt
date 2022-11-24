@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.23)
 
 if (APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "arm64")
-    project(gbs_opus C CXX)
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
+    project(gbs_opus C CXX OBJCXX OBJC)
+    set(OBJCXX_STANDARD 17)
 else()
     project(gbs_opus C CXX)
 endif()
 
 
 set(CMAKE_CXX_STANDARD 17)
+
 
 
 

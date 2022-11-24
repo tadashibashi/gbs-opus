@@ -14,7 +14,7 @@ namespace gbs_opus {
         ~image() { close(); }
         bool create(size_t width, size_t height, const std::vector<uint8_t> *pixels);
 
-        bool load(const std::string &path) { load(path.c_str()); }
+        bool load(const std::string &path) { return load(path.c_str()); }
         bool load(const char *path);
         bool load(SDL_RWops *rw);
         void close();

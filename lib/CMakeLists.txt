@@ -33,5 +33,5 @@ else()
     message(ERROR "Platform not supported yet")
 endif()
 
-#add_library(nfd nativefiledialog/src/nfd_cocoa.m nativefiledialog/src/nfd_common.c)
-#target_include_directories(nfd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/nativefiledialog/src/include)
+add_library(nfd nativefiledialog/src/nfd_cocoa.m nativefiledialog/src/nfd_common.c)
+target_include_directories(nfd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/nativefiledialog/src/include)
