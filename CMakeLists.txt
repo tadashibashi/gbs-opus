@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.23)
 
-if (APPLE)
+if ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Darwin") # Detect MACOS
+    set(MACOS TRUE)
+endif()
+
+if (MACOS)
+    # Universal binary
     set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
     project(gbs_opus C CXX OBJCXX OBJC)
@@ -9,14 +14,7 @@ else()
     project(gbs_opus C CXX)
 endif()
 
-
 set(CMAKE_CXX_STANDARD 17)
-
-
-
-
-
-
 
 # Submodules
 add_subdirectory(lib)
@@ -39,20 +37,28 @@ add_executable(gbs_opus src/main.cpp src/audio/plugout_app.cpp src/systems.h src
 
 
 # Platform Libraries
-if (APPLE)
-    set(NATIVE_DIALOG_LIBS "-framework AppKit" nfd z "-framework OpenGL")
-    set(PLATFORM_LIBS ${NATIVE_DIALOG_LIBS})
+if (MACOS)
+    set(NATIVE_DIALOG_LIBS "-framework AppKit" nfd)
+    set(PLATFORM_LIBS ${NATIVE_DIALOG_LIBS} "-framework OpenGL" z)
 
 elseif(WIN32)
-    set(NATIVE_DIALOG_LIBS comctl32 nfd zlib opengl32)
-    set(PLATFORM_LIBS SDL2main ${NATIVE_DIALOG_LIBS})
-
+    set(NATIVE_DIALOG_LIBS comctl32 nfd)
+    set(PLATFORM_LIBS SDL2main ${NATIVE_DIALOG_LIBS} opengl32 zlib)
+elseif(LINUX)
+    set(NATIVE_DIALOG_LIBS  nfd)
+    set(PLATFORM_LIBS ${NATIVE_DIALOG_LIBS} GL)
+    add_compile_options("pkg-config --cflags --libs gtk+-3.0")
+    # Also, make sure to add gtk+3 via sudo apt-get apt-get libgtk-3-dev
 endif()
 
 target_link_directories(gbs_opus PRIVATE lib/nativefiledialog/build/lib/Release/x64)
-target_link_libraries(gbs_opus PRIVATE SDL2 ${PLATFORM_LIBS} imgui libgbs SDL_gpu)
+target_link_libraries(gbs_opus PRIVATE SDL2 SDL2_ttf ${PLATFORM_LIBS} imgui gbs SDL_gpu)
 target_include_directories(gbs_opus PRIVATE
-        lib/SDL/include lib/nativefiledialog/src/include src lib/gbsplay
+        src
+        lib/SDL_ttf
+        lib/gbsplay
+        lib/nativefiledialog/src/include
+        lib/SDL/include
         lib/implot lib/json lib/sdl-gpu/include lib/json/include)
 
 # MacOS Bundle Info

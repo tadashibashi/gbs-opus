@@ -33,7 +33,8 @@ namespace gbs_opus
         return 1;
     }
 
-    void app::run() {
+    void app::run()
+    {
         if (systems::init())
         {
             SDL_SetEventFilter(filter_event, this);
@@ -43,7 +44,9 @@ namespace gbs_opus
             m_ctrl_ui = new control_ui{this};
             m_player = new gbs_player;
 
-            m_player->init(48000, 512);
+            /// TODO: Get default audio with SDL_GetDefaultAudioInfo in an overload of this func.
+
+            m_player->init(44100, 512);
             m_ctrl_ui->init();
 
             m_running = true;

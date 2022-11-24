@@ -63,7 +63,8 @@ namespace gbs_opus
                     auto path = std::filesystem::path(actions::open_file_dialog());
                     if (std::filesystem::exists(path))
                     {
-                        player.load(path);
+                        if (!player.load(path))
+                            ImGui::OpenPopup("FailedToOpenFile");
 
                         // Find .png, or .bmp
                         for (const auto& entry : std::filesystem::directory_iterator {path.parent_path()})
@@ -75,8 +76,17 @@ namespace gbs_opus
                             }
                         }
                     }
+                    else
+                    {
+                        ImGui::OpenPopup("FailedToOpenFile");
+                    }
 
-
+                    if (ImGui::BeginPopupModal("FailedToOpenFile"))
+                    {
+                        ImGui::Text("File failed to open.");
+                        if (ImGui::Button("Okay"))
+                            ImGui::CloseCurrentPopup();
+                    }
 
 
                 }
@@ -409,6 +419,11 @@ namespace gbs_opus
                         }
                         else
                             hilighted = true;
+
+                        if (io.MouseClicked[1])
+                        {
+                            // Show track metadata display/editor.
+                        }
 
                     }
 
