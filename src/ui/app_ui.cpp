@@ -63,7 +63,7 @@ namespace gbs_opus
                     auto path = std::filesystem::path(actions::open_file_dialog());
                     if (std::filesystem::exists(path))
                     {
-                        if (!player.load(path))
+                        if (!player.load(path.string()))
                             ImGui::OpenPopup("FailedToOpenFile");
 
                         // Find .png, or .bmp
@@ -71,7 +71,7 @@ namespace gbs_opus
                         {
                             if (entry.path().extension() == ".png" || entry.path().extension() == ".bmp")
                             {
-                                m_art.load(entry.path());
+                                m_art.load(entry.path().string());
                                 break;
                             }
                         }

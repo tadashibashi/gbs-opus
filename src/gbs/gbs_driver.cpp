@@ -233,7 +233,7 @@ namespace gbs_opus
         std::filesystem::directory_entry entry(fspath.parent_path().string() + "/" + meta.filename);
         if (entry.exists() && entry.is_regular_file())
         {
-            return load_gbs(entry.path().c_str(), meta.gbs_track_num);
+            return load_gbs(entry.path().string().c_str(), meta.gbs_track_num);
         }
 
         std::cerr << "Associated gbs file could not be found for m3u at " <<

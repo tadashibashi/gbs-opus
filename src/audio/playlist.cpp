@@ -1,5 +1,8 @@
 #include "playlist.h"
+
 #include <mathf.h>
+
+#include <cassert>
 #include <iostream>
 
 void gbs_opus::playlist::init(std::vector<uint8_t> order)

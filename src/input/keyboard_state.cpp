@@ -1,5 +1,7 @@
 #include "keyboard_state.h"
 #include <SDL_keyboard.h>
+#include <cstring>
+#include <cstdlib>
 
 namespace gbs_opus
 {

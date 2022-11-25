@@ -55,7 +55,7 @@ bool gbs_opus::gbs_meta::open(const std::string &folder_path)
                 if (e.path().extension() == ".m3u")
                 {
                     auto &m = m3us.emplace_back();
-                    if (!m.open(e.path()))
+                    if (!m.open(e.path().string()))
                     {
                         std::cerr << "Warning: m3u at \"" << e.path() <<
                                   "\" did not load correctly. Skipping file.\n";
@@ -71,7 +71,7 @@ bool gbs_opus::gbs_meta::open(const std::string &folder_path)
                 auto ext = e.path().extension();
                 if (ext == ".gbs" || ext == ".gbr" || ext == ".gb" || ext == ".vgm")
                 {
-                    gbs = gbs_open(e.path().c_str());
+                    gbs = gbs_open(e.path().string().c_str());
                     break;
                 }
             }

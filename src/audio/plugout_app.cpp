@@ -108,8 +108,8 @@ namespace gbs_opus
             .name = "app",
             .description = "Uses SDL sound driver",
             .open = sdl_open,
-            .write = sdl_write,
             .pause = sdl_pause,
+            .write = sdl_write,
             .close = sdl_close,
     };
 

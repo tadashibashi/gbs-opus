@@ -1,12 +1,13 @@
 #include "app.h"
 #include "systems.h"
-#include "input/input.h"
-#include "SDL_timer.h"
+
+#include <audio/gbs_player.h>
+#include <input/input.h>
+#include <ui/app_ui.h>
+
+#include <SDL_timer.h>
+
 #include <iostream>
-#include "audio/gbs_player.h"
-
-#include "ui/app_ui.h"
-
 #include <mutex>
 
 static std::mutex winmutex;
@@ -44,9 +45,7 @@ namespace gbs_opus
             m_ctrl_ui = new control_ui{this};
             m_player = new gbs_player;
 
-            /// TODO: Get default audio with SDL_GetDefaultAudioInfo in an overload of this func.
-
-            m_player->init(44100, 512);
+            m_player->init();
             m_ctrl_ui->init();
 
             m_running = true;

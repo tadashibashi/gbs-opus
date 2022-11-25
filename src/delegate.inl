@@ -1,6 +1,7 @@
 #include "delegate.h"
 
 #include <algorithm>
+#include <stdexcept>
 #include <typeinfo>
 #include <utility>
 

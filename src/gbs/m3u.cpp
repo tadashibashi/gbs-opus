@@ -1,8 +1,6 @@
-//
-// Created by Aaron Ishibashi on 11/19/22.
-//
-
 #include "m3u.h"
+#include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
@@ -16,6 +14,7 @@ enum class M3U_FIELD {
     LAST_NUM
 };
 
+// TODO: Put this in a helper string_helper class
 // trim from start (in place)
 static inline void ltrim(std::string &s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {

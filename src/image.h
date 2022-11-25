@@ -2,6 +2,7 @@
 #define GBS_OPUS_IMAGE_H
 #include <cstdint>
 #include <string>
+#include <vector>
 
 class GPU_Image;
 class SDL_RWops;

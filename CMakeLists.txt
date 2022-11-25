@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.16.5)
 
 if ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Darwin") # Detect MACOS
     set(MACOS TRUE)
@@ -13,6 +13,21 @@ if (MACOS)
 else()
     project(gbs_opus C CXX)
 endif()
+
+
+if (WIN32)
+    # Set all targets to build into one directory. Paths are otherwise broken.
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} ) # for MSBuild generators
+        string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR} )
+        set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR} )
+        set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR} )
+    endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+endif()
+
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -33,22 +48,27 @@ add_executable(gbs_opus src/main.cpp src/audio/plugout_app.cpp src/systems.h src
         src/gbs/m3u.cpp src/gbs/m3u.h src/gbs/gbs_meta.cpp src/gbs/gbs_meta.h src/audio/plugout_driver.cpp
         src/audio/plugout_driver.h src/delegate.inl src/delegate.h
         src/audio/playlist.cpp src/audio/playlist.h src/gbs/meta_io.cpp
-        src/gbs/meta_io.h src/gbs/libgbs.hpp src/mathf.cpp src/mathf.h src/gbs/gbs_driver.cpp src/gbs/gbs_driver.h src/gbs/impl/gbs_driver_impl.cpp src/gbs/impl/gbs_driver_impl.h src/ui/volume_button.h src/ui/ui.h src/image.cpp src/image.h)
+        src/gbs/meta_io.h src/gbs/libgbs.hpp src/mathf.cpp src/mathf.h src/gbs/gbs_driver.cpp src/gbs/gbs_driver.h
+        src/gbs/impl/gbs_driver_impl.cpp src/gbs/impl/gbs_driver_impl.h src/ui/volume_button.h src/ui/ui.h
+        src/image.cpp src/image.h)
 
 
 # Platform Libraries
 if (MACOS)
-    set(NATIVE_DIALOG_LIBS "-framework AppKit" nfd)
-    set(PLATFORM_LIBS ${NATIVE_DIALOG_LIBS} "-framework OpenGL" z)
+    set(PLATFORM_LIBS nfd "-framework OpenGL" z)
 
 elseif(WIN32)
-    set(NATIVE_DIALOG_LIBS comctl32 nfd)
-    set(PLATFORM_LIBS SDL2main ${NATIVE_DIALOG_LIBS} opengl32 zlib)
+    if (MSVC)
+        message(ERROR "Only mingw64 compiler is supported on Windows.")
+    endif()
+
+    set(PLATFORM_LIBS SDL2main nfd opengl32 z mingw32)
+
 elseif(LINUX)
-    set(NATIVE_DIALOG_LIBS  nfd)
-    set(PLATFORM_LIBS ${NATIVE_DIALOG_LIBS} GL)
+    set(PLATFORM_LIBS nfd GL zlib)
     add_compile_options("pkg-config --cflags --libs gtk+-3.0")
     # Also, make sure to add gtk+3 via sudo apt-get apt-get libgtk-3-dev
+
 endif()
 
 target_link_directories(gbs_opus PRIVATE lib/nativefiledialog/build/lib/Release/x64)
@@ -60,6 +80,12 @@ target_include_directories(gbs_opus PRIVATE
         lib/nativefiledialog/src/include
         lib/SDL/include
         lib/implot lib/json lib/sdl-gpu/include lib/json/include)
+
+
+# Link Assets for testing. (Manually copy the folder on build)
+include(cmake/link_assets.cmake)
+
+Link_Assets(res)
 
 # MacOS Bundle Info
 #if (APPLE)

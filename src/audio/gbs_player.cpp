@@ -6,6 +6,9 @@
 #include <vector>
 #include <filesystem>
 
+#include <SDL.h>
+#include <iostream>
+
 namespace gbs_opus
 {
     struct opus_output_buffer
@@ -74,6 +77,21 @@ namespace gbs_opus
         return true;
     }
 
+    bool gbs_player::init(plugout_type p)
+    {
+        char *name;
+        SDL_AudioSpec spec;
+
+        if (SDL_GetDefaultAudioInfo(&name, &spec, 0) != 0)
+        {
+            std::cout << "Failed to get default audio info, falling back to 44100Hz, 1024 buffer size\n";
+            return init(44100, 1024, p);
+
+        }
+
+        return init(spec.freq, spec.samples, p);
+    }
+
 
     bool gbs_player::load(const std::string &path)
     {
@@ -83,7 +101,7 @@ namespace gbs_opus
         gbs_meta meta;
         std::filesystem::path fspath(path);
 
-        if (!meta.open(fspath.parent_path()))
+        if (!meta.open(fspath.parent_path().string()))
             return false;
 
         m->meta = std::move(meta);

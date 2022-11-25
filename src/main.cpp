@@ -1,12 +1,10 @@
 #include "app.h"
-#include <thread>
 
-void run_app(gbs_opus::app *a)
-{
-    a->run();
-}
+#ifdef _WIN32
+#include <SDL_main.h>
+#endif
 
-int main()
+int main(int argc, char *argv[])
 {
     auto a = new gbs_opus::app;
     a->run();

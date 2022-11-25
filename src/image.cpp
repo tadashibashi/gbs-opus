@@ -1,7 +1,7 @@
 #include "image.h"
+
 #include <SDL_gpu.h>
 #include <iostream>
-#include <vector>
 
 namespace gbs_opus {
     bool image::load(const char *path)
