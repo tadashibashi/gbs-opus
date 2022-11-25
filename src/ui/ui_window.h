@@ -23,6 +23,7 @@ namespace gbs_opus::ui
 
         [[nodiscard]] const std::string &name() const { return m_name; }
         gbs_opus::app *app() { return m_app; }
+
     protected:
         virtual void render() = 0;
         bool m_visible = true;

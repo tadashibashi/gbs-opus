@@ -30,13 +30,10 @@ namespace gbs_opus
 
         void process_input();
 
+        /// Checks if systems have been initialized.
         [[nodiscard]] bool was_init();
 
-        bool should_quit();
-
         std::string open_file_dialogue();
-
-        void quit();
     };
 }
 

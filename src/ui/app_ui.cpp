@@ -95,7 +95,7 @@ namespace gbs_opus
 
                 if (ImGui::MenuItem("Quit", "Ctrl+Q"))
                 {
-                    systems::quit();
+                    app()->quit();
                 }
 
                 ImGui::EndMenu();

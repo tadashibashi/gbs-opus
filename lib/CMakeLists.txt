@@ -45,6 +45,7 @@ elseif(MSVC) # Unsupported currently, use MinGW
     add_compile_definitions(__ORDER_BIG_ENDIAN__=4321 __BYTE_ORDER__=${ENDIAN} __ORDER_LITTLE_ENDIAN__=1234)
 elseif(WIN32)
     target_link_libraries(SDL_gpu opengl32 glu32)
+
 endif()
 
 # ===== ImGUI =========================================================================

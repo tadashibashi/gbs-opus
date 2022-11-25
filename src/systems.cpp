@@ -17,7 +17,6 @@ namespace gbs_opus
 {
     // later: move input processing to input system, create listener system
 
-    static bool s_should_quit;
     static GPU_Target *s_target;
     static void init_imgui();
     static void shutdown_imgui();
@@ -147,9 +146,6 @@ namespace gbs_opus
         //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
         //IM_ASSERT(font != NULL);
     }
-
-    bool systems::should_quit() { return s_should_quit; }
-    void systems::quit() { s_should_quit = true; }
 
 
     static void shutdown_imgui()

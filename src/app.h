@@ -12,6 +12,7 @@ namespace gbs_opus
         void draw();
         void run_frame();
         void update();
+        void quit();
         class gbs_player *player() { return m_player; }
         [[nodiscard]] bool is_running() const { return m_running; }
     private:

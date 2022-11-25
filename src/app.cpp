@@ -49,7 +49,7 @@ namespace gbs_opus
             m_ctrl_ui->init();
 
             m_running = true;
-            while (!systems::should_quit() && m_running )
+            while (m_running )
                 run_frame();
 
             m_player->close();
@@ -107,6 +107,10 @@ namespace gbs_opus
 
     app::app() : m_ctrl_ui{}, m_player{} {
 
+    }
+
+    void app::quit() {
+        m_running = false;
     }
 
 }
