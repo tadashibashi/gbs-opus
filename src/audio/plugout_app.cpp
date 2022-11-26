@@ -29,16 +29,19 @@ namespace gbs_opus
     static long sdl_open(plugout_endian *endian, long rate, long *buffer_bytes)
     {
         SDL_AudioSpec desired;
-        if (SDL_WasInit(SDL_INIT_AUDIO) != SDL_INIT_AUDIO &&
-            SDL_Init(SDL_INIT_AUDIO) != 0) {
-            fprintf(stderr, _("Could not init SDL: %s\n"), SDL_GetError());
-            return -1;
+        if (SDL_WasInit(SDL_INIT_AUDIO) != SDL_INIT_AUDIO)
+        {
+            if (SDL_AudioInit(nullptr) != 0)
+            {
+                fprintf(stderr, _("Could not init SDL Audio: %s\n"), SDL_GetError());
+                return -1;
+            }
         }
 
         SDL_zero(desired);
         desired.freq = rate;
         desired.channels = 2;
-        desired.samples = 1024;
+        desired.samples = *buffer_bytes;
         desired.callback = nullptr;
 
         switch (*endian) {

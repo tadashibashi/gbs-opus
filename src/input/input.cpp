@@ -44,10 +44,15 @@ namespace gbs_opus
                     on_quit.try_invoke(ev.quit);
                     break;
                 case SDL_WINDOWEVENT:
-                    if (ev.window.event == SDL_WINDOWEVENT_CLOSE)
-                        on_windowclose.try_invoke(ev.window);
-                    if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
-                        SDL_Log("Resized window! %d by %d", ev.window.data1, ev.window.data2);
+                    switch(ev.window.event)
+                    {
+                        case SDL_WINDOWEVENT_CLOSE:
+                            on_windowclose.try_invoke(ev.window);
+                            break;
+                        case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+                            SDL_Log("Hidden!");
+                            break;
+                    }
                     break;
                 case SDL_DROPFILE:
                     on_dropfile.invoke(ev.drop);

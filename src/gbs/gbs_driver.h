@@ -56,7 +56,7 @@ namespace gbs_opus
         [[nodiscard]] const char *filetype() const;
 
         /// Gets internal gbs object. Null if none loaded.
-        gbs *gbs();
+        struct gbs *gbs();
 
         [[nodiscard]] const plugout_driver &plugout() const;
 

@@ -21,6 +21,7 @@
 #include <iostream>
 #include <vector>
 #include <atomic>
+#include <climits>
 
 long mute_channel[4];
 

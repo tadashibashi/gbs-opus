@@ -79,17 +79,7 @@ namespace gbs_opus
 
     bool gbs_player::init(plugout_type p)
     {
-        char *name;
-        SDL_AudioSpec spec;
-
-        if (SDL_GetDefaultAudioInfo(&name, &spec, 0) != 0)
-        {
-            std::cout << "Failed to get default audio info, falling back to 44100Hz, 1024 buffer size\n";
-            return init(44100, 1024, p);
-
-        }
-
-        return init(spec.freq, spec.samples, p);
+        return init(44100, 2048, p);
     }
 
 
@@ -153,7 +143,7 @@ namespace gbs_opus
     {
         m->driver.set_paused(false);
 
-        if (t == -128)
+        if (t == -128) // TODO: Set this as a constant
         {
             auto song_index = m->driver.song_index();
             auto it = std::find_if(m->meta.tracks().begin(), m->meta.tracks().end(),

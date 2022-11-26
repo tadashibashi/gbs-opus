@@ -40,7 +40,7 @@ namespace gbs_opus
         init_imgui();
         input::init();
         actions::init();
-
+        NFD_Init();
 
 
         return true;
@@ -48,6 +48,7 @@ namespace gbs_opus
 
     void systems::shutdown()
     {
+        NFD_Quit();
         shutdown_imgui();
         input::close();
         if (s_target)
@@ -179,31 +180,12 @@ namespace gbs_opus
     void systems::process_input()
     {
         input::process();
-        SDL_Event ev;
-        while(SDL_PollEvent(&ev))
-        {
-            ImGui_ImplSDL2_ProcessEvent(&ev);
-            if (ev.type == SDL_QUIT)
-                s_should_quit = true;
-            if (ev.type == SDL_WINDOWEVENT && ev.window.event == SDL_WINDOWEVENT_CLOSE &&
-                ev.window.windowID == s_target->context->windowID)
-                s_should_quit = true;
-            if (ev.type == SDL_DROPFILE)
-            {
-                std::filesystem::directory_entry entry(ev.drop.file);
-                if (entry.exists() && entry.is_regular_file())
-                {
-
-                }
-
-            }
-        }
-
     }
 
     std::string systems::open_file_dialogue() {
         nfdchar_t *outPath = nullptr;
-        nfdresult_t result = NFD_OpenDialog( nullptr, nullptr, &outPath );
+        nfdfilteritem_t filterItem[1] = { "Gameboy Sound Files", "gbs,gbr,m3u,vgm,gb" };
+        nfdresult_t result = NFD_OpenDialog( &outPath, filterItem, 1, nullptr);
         std::string ret;
 
         if ( result == NFD_OKAY ) {

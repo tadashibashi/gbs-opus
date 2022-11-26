@@ -4,6 +4,10 @@ if ("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Darwin") # Detect MACOS
     set(MACOS TRUE)
 endif()
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
 if (MACOS)
     # Universal binary
     set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
@@ -28,6 +32,10 @@ if (WIN32)
     endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 endif()
 
+if (LINUX)
+    set(OpenGL_GL_PREFERENCE "GLVND")
+
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -65,8 +73,9 @@ elseif(WIN32)
     set(PLATFORM_LIBS SDL2main nfd opengl32 z mingw32)
 
 elseif(LINUX)
-    set(PLATFORM_LIBS nfd GL zlib)
-    add_compile_options("pkg-config --cflags --libs gtk+-3.0")
+    set(PLATFORM_LIBS nfd GL GLU z asound)
+    #add_compile_options("pkg-config --cflags --libs gtk+-3.0")
+
     # Also, make sure to add gtk+3 via sudo apt-get apt-get libgtk-3-dev
 
 endif()
@@ -77,7 +86,7 @@ target_include_directories(gbs_opus PRIVATE
         src
         lib/SDL_ttf
         lib/gbsplay
-        lib/nativefiledialog/src/include
+        lib/nfd-extended/src/include
         lib/SDL/include
         lib/implot lib/json lib/sdl-gpu/include lib/json/include)
 

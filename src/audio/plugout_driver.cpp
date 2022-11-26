@@ -46,11 +46,9 @@ bool gbs_opus::plugout_driver::load()
     // Choose plugout
     switch(m_plugout_type)
     {
-#ifdef PLUGOUT_SDL
-        case plugout_type::SDL:
+        case plugout_type::APP:
             p = &plugout_app;
             break;
-#endif
 #ifdef PLUGOUT_MIDI
         case plugout_type::MIDI:
             p = &plugout_midi;

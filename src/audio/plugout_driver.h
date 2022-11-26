@@ -8,6 +8,7 @@
 namespace gbs_opus
 {
     enum class plugout_type {
+        APP,
         SDL,
         ALSA,
         ALTMIDI,

@@ -35,8 +35,8 @@ namespace gbs_opus
         gbs_player &operator=(gbs_player &) = delete;
 
     public:
-        bool init(long sample_rate, int16_t buffer_size, plugout_type p = plugout_type::SDL);
-        bool init(plugout_type p = plugout_type::SDL);
+        bool init(long sample_rate, int16_t buffer_size, plugout_type p = plugout_type::APP);
+        bool init(plugout_type p = plugout_type::APP);
         void close();
 
         void update();

@@ -43,6 +43,7 @@ namespace gbs_opus
 
         static delegate<void(const SDL_DropEvent &ev)> on_dropfile;
         static delegate<void(const SDL_WindowEvent &ev)> on_windowclose;
+        static delegate<void(const SDL_WindowEvent &ev)> on_windowhide;
         static delegate<void(const SDL_QuitEvent &ev)> on_quit;
 
     private:

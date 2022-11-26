@@ -16,7 +16,7 @@ if (NOT EMSCRIPTEN)
 endif()
 
 
-
+set(USE_SYSTEM_GLEW TRUE)
 add_subdirectory(sdl-gpu)
 
 if (EMSCRIPTEN)
@@ -45,7 +45,8 @@ elseif(MSVC) # Unsupported currently, use MinGW
     add_compile_definitions(__ORDER_BIG_ENDIAN__=4321 __BYTE_ORDER__=${ENDIAN} __ORDER_LITTLE_ENDIAN__=1234)
 elseif(WIN32)
     target_link_libraries(SDL_gpu opengl32 glu32)
-
+elseif(LINUX)
+    target_link_libraries(SDL_gpu GL GLU X11)
 endif()
 
 # ===== ImGUI =========================================================================
@@ -84,10 +85,12 @@ if (MACOS)
 elseif(WIN32)
     target_link_libraries(gbs PRIVATE z)
 else()
-    message(ERROR "Platform not supported yet")
+    target_link_libraries(gbs PRIVATE z)
 endif()
 
 target_include_directories(gbs PRIVATE SDL/include)
+
+add_subdirectory(nfd-extended)
 
 # ===== Native File Dialog =================================================================
 if (MACOS)
@@ -101,5 +104,6 @@ elseif(WIN32)
             nativefiledialog/src/include)
     target_link_libraries(nfd PUBLIC comctl32)
 elseif(LINUX)
+
 
 endif()
