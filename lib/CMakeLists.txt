@@ -17,8 +17,6 @@ if (NOT EMSCRIPTEN)
     add_subdirectory(SDL_ttf)
 endif()
 
-
-set(USE_SYSTEM_GLEW TRUE)
 add_subdirectory(sdl-gpu)
 
 if (EMSCRIPTEN)
