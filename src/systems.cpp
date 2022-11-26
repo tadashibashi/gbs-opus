@@ -201,4 +201,8 @@ namespace gbs_opus
 
         return ret;
     }
+
+    void systems::process_input() {
+        input::process();
+    }
 }

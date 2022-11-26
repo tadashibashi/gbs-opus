@@ -26,3 +26,9 @@
 [submodule "lib/nfd-extended"]
 	path = lib/nfd-extended
 	url = https://github.com/btzy/nativefiledialog-extended.git
+[submodule "lib/lua"]
+	path = lib/lua
+	url = https://github.com/lua/lua.git
+[submodule "lib/sol2"]
+	path = lib/sol2
+	url = https://github.com/ThePhD/sol2.git

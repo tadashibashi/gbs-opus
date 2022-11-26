@@ -58,7 +58,7 @@ add_executable(gbs_opus src/main.cpp src/audio/plugout_app.cpp src/systems.h src
         src/audio/playlist.cpp src/audio/playlist.h src/gbs/meta_io.cpp
         src/gbs/meta_io.h src/gbs/libgbs.hpp src/mathf.cpp src/mathf.h src/gbs/gbs_driver.cpp src/gbs/gbs_driver.h
         src/gbs/impl/gbs_driver_impl.cpp src/gbs/impl/gbs_driver_impl.h src/ui/volume_button.h src/ui/ui.h
-        src/image.cpp src/image.h)
+        src/image.cpp src/image.h src/plugin/plugin.cpp src/plugin/plugin.h src/plugin/lua.hpp src/plugin/lua_lib.c)
 
 
 # Platform Libraries
@@ -88,7 +88,13 @@ target_include_directories(gbs_opus PRIVATE
         lib/gbsplay
         lib/nfd-extended/src/include
         lib/SDL/include
-        lib/implot lib/json lib/sdl-gpu/include lib/json/include)
+        lib/implot
+        lib/json
+        lib/sdl-gpu/include
+        lib/json/include
+        lib/sol2/include
+        lib/lua
+        )
 
 
 # Link Assets for testing. (Manually copy the folder on build)

@@ -1,6 +1,6 @@
 #ifndef GBS_OPUS_KEY_H
 #define GBS_OPUS_KEY_H
-#include "SDL_scancode.h"
+#include <SDL_scancode.h>
 
 /// Keyboard keys
 namespace gbs_opus
@@ -242,10 +242,10 @@ namespace gbs_opus
         KeyboardIllumUp = SDL_SCANCODE_KBDILLUMUP,
         Eject = SDL_SCANCODE_EJECT,
         Sleep = SDL_SCANCODE_SLEEP,
-        App1 = SDL_SCANCODE_APP1,
-        App2 = SDL_SCANCODE_APP2,
-        AudioRewind = SDL_SCANCODE_AUDIOREWIND,
-        AudioFastForward = SDL_SCANCODE_AUDIOFASTFORWARD,
+//        App1 = SDL_SCANCODE_APP1,
+//        App2 = SDL_SCANCODE_APP2,
+//        AudioRewind = SDL_SCANCODE_AUDIOREWIND,
+//        AudioFastForward = SDL_SCANCODE_AUDIOFASTFORWARD,
     };
 }
 

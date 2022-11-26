@@ -65,9 +65,9 @@ namespace gbs_opus
         gbs_playlist playlist;
     };
 
-    bool gbs_player::init(long sample_rate, int16_t buffer_size, plugout_type type)
+    bool gbs_player::init(long sample_rate, int16_t buffer_size)
     {
-        m->driver.init(sample_rate, buffer_size, type);
+        m->driver.init(sample_rate, buffer_size, plugout_type::APP);
 
         // Setup next song callback
         static std::function<void()> nextsongcb = [this]() {
@@ -77,9 +77,9 @@ namespace gbs_opus
         return true;
     }
 
-    bool gbs_player::init(plugout_type p)
+    bool gbs_player::init()
     {
-        return init(44100, 2048, p);
+        return init(44100, 1024);
     }
 
 

@@ -41,7 +41,7 @@ namespace gbs_opus
         SDL_zero(desired);
         desired.freq = rate;
         desired.channels = 2;
-        desired.samples = *buffer_bytes;
+        desired.samples = *buffer_bytes / (sizeof(int16_t) * 2);
         desired.callback = nullptr;
 
         switch (*endian) {

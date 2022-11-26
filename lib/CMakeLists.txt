@@ -9,6 +9,8 @@ set(SDL2MAIN_LIBRARY SDL2main)
 if (NOT EMSCRIPTEN)
     # Emscripten uses official ports of these libraries, no need to include
     add_subdirectory(SDL)
+
+
     set(SDL2TTF_BUILD_SHARED_LIBS FALSE)
     set(SDL2TTF_VENDORED TRUE) # use included harfbuzz & freetype submodules
     set(BUILD_FRAMEWORK FALSE) # for MacOS, we don't need a framework
@@ -79,7 +81,6 @@ add_library(gbs
         gbsplay/plugout_altmidi.c
         gbsplay/plugout_midi.c gbsplay/midifile.c gbsplay/filewriter.c
         gbsplay/impulse.h gbsplay/config.h)
-
 if (MACOS)
     target_link_libraries(gbs PRIVATE z)
 elseif(WIN32)
@@ -93,7 +94,9 @@ target_include_directories(gbs PRIVATE SDL/include)
 add_subdirectory(nfd-extended)
 
 # ===== Native File Dialog =================================================================
-if (MACOS)
+
+if (EMSCRIPTEN)
+elseif (MACOS)
     add_library(nfd nativefiledialog/src/nfd_cocoa.m nativefiledialog/src/nfd_common.c)
     target_include_directories(nfd PRIVATE
             nativefiledialog/src/include)
