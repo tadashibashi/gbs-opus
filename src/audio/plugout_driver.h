@@ -36,7 +36,7 @@ namespace gbs_opus
         /// Gets the actual sample rate in Hz, of the output plugin.
         [[nodiscard]] long sample_rate() const { return m_sample_rate; }
 
-        /// Gets the actual buffer size, in bytes, of the output plugin.
+        /// Gets the actual buffer size, in samples, of the output plugin.
         [[nodiscard]] long buffer_size() const { return m_buffer_size; }
 
         /// Call before opening driver to set the requested sample rate.

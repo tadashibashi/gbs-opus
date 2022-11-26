@@ -128,7 +128,7 @@ bool gbs_opus::plugout_driver::load()
 
 long gbs_opus::plugout_driver::call_open() {
     long result = 0;
-    long bytes = m_req_buffersize;
+    long bytes = m_req_buffersize * (sizeof(int16_t) * 2);
     long rate = m_req_samplerate; // TODO: not modified by plugout, take out if not necessary?
 
     if (sound_open)
@@ -143,10 +143,9 @@ long gbs_opus::plugout_driver::call_open() {
         }
         if (bytes != m_req_buffersize)
         {
-            std::cerr << "Warning: requested buffer size does not match the actual size:\n"
-                         "Requsted " << m_req_buffersize << ", but got " << bytes << '\n';
+            std::cerr << "Warning: requested sample buffer size does not match the actual size:\n"
+                         "Requsted " << m_req_buffersize << ", but got " << bytes / (sizeof(int16_t) * 2) << '\n';
         }
-
     }
 
     m_buffer_size = bytes;

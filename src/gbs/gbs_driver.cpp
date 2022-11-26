@@ -43,7 +43,7 @@ namespace gbs_opus
         m->plugout.load();
         m->plugout.call_open();
 
-        m->init_buffer(m->plugout.buffer_size());
+        m->init_buffer(m->plugout.buffer_size() * (sizeof(int16_t)*2));
 
         return true;
     }

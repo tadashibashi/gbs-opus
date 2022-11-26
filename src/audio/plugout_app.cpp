@@ -61,7 +61,7 @@ namespace gbs_opus
 
         SDL_PauseAudioDevice(device, UNPAUSE);
 
-        *buffer_bytes = obtained.samples * 4;
+        *buffer_bytes = obtained.samples * sizeof(int16_t) * 2;
         return 0;
     }
 

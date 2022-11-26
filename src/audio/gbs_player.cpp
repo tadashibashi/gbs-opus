@@ -79,7 +79,7 @@ namespace gbs_opus
 
     bool gbs_player::init()
     {
-        return init(44100, 2048);
+        return init(44100, 1024);
     }
 
 
