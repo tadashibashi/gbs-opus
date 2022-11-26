@@ -34,7 +34,6 @@ endif()
 
 if (LINUX)
     set(OpenGL_GL_PREFERENCE "GLVND")
-
 endif()
 
 set(CMAKE_CXX_STANDARD 17)

@@ -92,21 +92,3 @@ endif()
 target_include_directories(gbs PRIVATE SDL/include)
 
 add_subdirectory(nfd-extended)
-
-# ===== Native File Dialog =================================================================
-
-if (EMSCRIPTEN)
-elseif (MACOS)
-    add_library(nfd nativefiledialog/src/nfd_cocoa.m nativefiledialog/src/nfd_common.c)
-    target_include_directories(nfd PRIVATE
-            nativefiledialog/src/include)
-    target_link_libraries(nfd PUBLIC "-framework AppKit")
-elseif(WIN32)
-    add_library(nfd nativefiledialog/src/nfd_win.cpp nativefiledialog/src/nfd_common.c)
-    target_include_directories(nfd PRIVATE
-            nativefiledialog/src/include)
-    target_link_libraries(nfd PUBLIC comctl32)
-elseif(LINUX)
-
-
-endif()

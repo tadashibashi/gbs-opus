@@ -1,17 +1,21 @@
 #include "systems.h"
-#include <SDL.h>
-#include <iostream>
 
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
+#include "audio/gbs_player.h"
 #include "input/input.h"
 #include "ui/actions.h"
-#include "audio/gbs_player.h"
-#include "implot.h"
-#include "imgui_impl_opengl3.h"
-#include <filesystem>
-#include <nfd.h>
+
+
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl.h>
+#include <implot.h>
+
+#include <nfd.hpp>
+#include <SDL.h>
 #include <SDL_gpu.h>
+
+#include <iostream>
+#include <filesystem>
 
 namespace gbs_opus
 {
@@ -200,9 +204,5 @@ namespace gbs_opus
         }
 
         return ret;
-    }
-
-    void systems::process_input() {
-        input::process();
     }
 }
