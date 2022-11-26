@@ -1,12 +1,6 @@
 #include <SDL.h>
 #include <ctime>
 
-extern "C" {
-#include <plugout.h>
-#include <common.h>
-}
-
-
 #include "gbs_player.h"
 
 #define PLAYBACK_MODE      0
