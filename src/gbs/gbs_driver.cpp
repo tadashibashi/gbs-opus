@@ -20,8 +20,6 @@ namespace gbs_opus
     void step_callback_handler(struct gbs *gbs, cycles_t cycles, const struct gbs_channel_status chan[], void *priv);
     void io_callback_handler(struct gbs *gbs, cycles_t cycles, uint32_t addr, uint8_t value, void *priv);
     void write_callback_handler(struct gbs *gbs, struct gbs_output_buffer *buf, void *priv);
-    //void pause_callback_handler(struct gbs *gbs, int paused, void *priv);
-    //long skip_callback_handler(struct gbs *gbs, void *priv);
     long nextsubsong_callback_handler(struct gbs *gbs, void *priv);
 #pragma endregion
 

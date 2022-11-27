@@ -4,7 +4,7 @@
 #include <gbs/libgbs.hpp>
 #include <audio/plugout_driver.h>
 
-const long DefaultRefreshDelay = 33;
+const long DefaultRefreshDelay = 17;
 
 namespace gbs_opus {
 
