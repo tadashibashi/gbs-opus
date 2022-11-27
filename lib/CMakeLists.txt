@@ -93,16 +93,18 @@ add_subdirectory(nfd-extended)
 
 # ========== LuaJIT ===============================================
 if (MACOS)
-    add_custom_command(OUTPUT lib/LuaJIT/src/libluajit.a
-            COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/LuaJIT && make MACOSX_DEPLOYMENT_TARGET=10.15
-            COMMENT "Making LuaJIT library")
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/libluajit.a)
+        execute_process(COMMAND make MACOSX_DEPLOYMENT_TARGET=10.15
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/LuaJIT)
+    endif()
 elseif(WIN32)
-#    add_custom_command(OUTPUT lib/LuaJIT/src/libluajit.lib
-#            COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/LuaJIT/src && mingw32-make
-#            COMMAND mv ${CMAKE_BINARY_DIR}\\
-#            COMMENT "Making LuaJIT library")
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/luajit.dll)
+        execute_process(COMMAND mingw32-make
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src)
+    endif()
 elseif(LINUX)
-    add_custom_command(OUTPUT lib/LuaJIT/src/libluajit.a
-            COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/LuaJIT && make
-            COMMENT "Making LuaJIT library")
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/libluajit.a)
+        execute_process(COMMAND make
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/LuaJIT)
+    endif()
 endif()
