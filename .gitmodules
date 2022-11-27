@@ -1,10 +1,6 @@
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = https://github.com/ocornut/imgui.git
-[submodule "lib/nativefiledialog"]
-	path = lib/nativefiledialog
-	url = https://github.com/mlabbe/nativefiledialog.git
-	ignore = dirty
 [submodule "lib/implot"]
 	path = lib/implot
 	url = https://github.com/epezent/implot.git
@@ -32,3 +28,9 @@
 [submodule "lib/sol2"]
 	path = lib/sol2
 	url = https://github.com/ThePhD/sol2.git
+[submodule "lib/LuaJIT"]
+	path = lib/LuaJIT
+	url = https://github.com/LuaJIT/LuaJIT.git
+[submodule "lib/luajit-remake"]
+	path = lib/luajit-remake
+	url = https://github.com/luajit-remake/luajit-remake.git
