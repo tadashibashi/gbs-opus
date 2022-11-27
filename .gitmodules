@@ -28,12 +28,7 @@
 [submodule "lib/sol2"]
 	path = lib/sol2
 	url = https://github.com/ThePhD/sol2.git
-[submodule "lib/LuaJIT"]
-	path = lib/LuaJIT
-	url = https://github.com/LuaJIT/LuaJIT.git
-[submodule "lib/luajit-remake"]
-	path = lib/luajit-remake
-	url = https://github.com/luajit-remake/luajit-remake.git
 [submodule "lib/luajit"]
 	path = lib/luajit
 	url = https://github.com/luapower/luajit.git
+
