@@ -34,3 +34,6 @@
 [submodule "lib/luajit-remake"]
 	path = lib/luajit-remake
 	url = https://github.com/luajit-remake/luajit-remake.git
+[submodule "lib/luajit"]
+	path = lib/luajit
+	url = https://github.com/luapower/luajit.git

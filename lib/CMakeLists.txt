@@ -93,18 +93,21 @@ add_subdirectory(nfd-extended)
 
 # ========== LuaJIT ===============================================
 if (MACOS)
-    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/libluajit.a)
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src/src/libluajit.a)
         execute_process(COMMAND make MACOSX_DEPLOYMENT_TARGET=10.15
-                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/LuaJIT)
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src)
     endif()
-elseif(WIN32)
-    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/luajit.dll)
-        execute_process(COMMAND mingw32-make
-                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src)
+elseif (WIN32)
+    if (NOT EXISTS ${CMAKE_BINARY_DIR}/lua51.dll OR NOT EXISTS ${CMAKE_BINARY_DIR}/libluajit-5.1.dll.a)
+        execute_process(
+                COMMAND mingw32-make
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/Luajit/csrc/luajit/src)
+        configure_file(${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src/src/lua51.dll ${CMAKE_BINARY_DIR}/lua51.dll COPYONLY)
+        configure_file(${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src/src/libluajit-5.1.dll.a ${CMAKE_BINARY_DIR}/libluajit-5.1.dll.a COPYONLY)
     endif()
-elseif(LINUX)
-    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/libluajit.a)
+elseif (LINUX)
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src/src/libluajit.a)
         execute_process(COMMAND make
-                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/LuaJIT)
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src)
     endif()
 endif()

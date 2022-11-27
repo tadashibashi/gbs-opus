@@ -57,22 +57,21 @@ add_executable(gbs_opus src/main.cpp src/audio/plugout_app.cpp src/systems.h src
         src/audio/playlist.cpp src/audio/playlist.h src/gbs/meta_io.cpp
         src/gbs/meta_io.h src/gbs/libgbs.hpp src/mathf.cpp src/mathf.h src/gbs/gbs_driver.cpp src/gbs/gbs_driver.h
         src/gbs/impl/gbs_driver_impl.cpp src/gbs/impl/gbs_driver_impl.h src/ui/volume_button.h src/ui/ui.h
-        src/image.cpp src/image.h src/plugin/plugin.cpp src/plugin/plugin.h src/plugin/lua.hpp src/plugin/lua_lib.c src/plugin/plugin_mgr.cpp src/plugin/plugin_mgr.h src/resource_mgr.cpp src/resource_mgr.h src/gbs/ogbs.cpp src/gbs/ogbs.h src/graphics/graphics.cpp src/graphics/graphics.h)
+        src/image.cpp src/image.h src/plugin/plugin.cpp src/plugin/plugin.h src/plugin/lua.hpp src/plugin/plugin_mgr.cpp src/plugin/plugin_mgr.h src/resource_mgr.cpp src/resource_mgr.h src/gbs/ogbs.cpp src/gbs/ogbs.h src/graphics/graphics.cpp src/graphics/graphics.h)
 
 
 # Platform Libraries
 if (MACOS)
-    set(PLATFORM_LIBS nfd "-framework OpenGL" z ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/libluajit.a)
-    target_link_directories(gbs_opus PRIVATE lib/LuaJIT/src)
+    set(PLATFORM_LIBS nfd "-framework OpenGL" z ${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src/src/libluajit.a)
 elseif(WIN32)
     if (MSVC)
         message(ERROR "Only mingw64 compiler is supported on Windows.")
     endif()
 
-    set(PLATFORM_LIBS SDL2main nfd opengl32 z mingw32)
+    set(PLATFORM_LIBS SDL2main nfd opengl32 z mingw32 ${CMAKE_BINARY_DIR}/libluajit-5.1.dll.a)
 
 elseif(LINUX)
-    set(PLATFORM_LIBS nfd GL GLU z asound ${CMAKE_SOURCE_DIR}/lib/LuaJIT/src/libluajit.a)
+    set(PLATFORM_LIBS nfd GL GLU z asound ${CMAKE_SOURCE_DIR}/lib/luajit/csrc/luajit/src/src/libluajit.a)
     #add_compile_options("pkg-config --cflags --libs gtk+-3.0")
 
     # Also, make sure to add gtk+3 via sudo apt-get apt-get libgtk-3-dev
@@ -91,7 +90,7 @@ target_include_directories(gbs_opus PRIVATE
         lib/sdl-gpu/include
         lib/json/include
         lib/sol2/include
-        lib/LuaJIT/src
+        lib/luajit/csrc/luajit/src/src
         )
 
 
