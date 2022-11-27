@@ -82,7 +82,6 @@ namespace gbs_opus
         return init(44100, 1024);
     }
 
-
     bool gbs_player::load(const std::string &path)
     {
         if (!m->driver.load(path.c_str()))

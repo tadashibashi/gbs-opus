@@ -72,5 +72,13 @@ namespace gbs_opus {
         return GPU_GetTextureHandle(m_img);
     }
 
+    size_t image::width() const {
+        return m_img->base_w;
+    }
+
+    size_t image::height() const {
+        return m_img->base_h;
+    }
+
 
 } // gbs_opus

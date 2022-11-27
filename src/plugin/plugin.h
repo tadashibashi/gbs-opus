@@ -1,5 +1,7 @@
 #ifndef GBS_OPUS_PLUGIN_H
 #define GBS_OPUS_PLUGIN_H
+#include <SDL_gpu.h>
+#include "graphics/graphics.h"
 
 namespace gbs_opus
 {
@@ -8,23 +10,23 @@ namespace gbs_opus
         plugin();
         ~plugin();
 
-
-
-        void load();
+        void load(const std::string &path);
         void close();
 
-        // Called when the plugin opens, fires opus.init()
+        // Called when the plugin opens, fires init()
         void script_init();
 
-        // Called when the plugin closes, fires opus.close()
+        // Called when the plugin closes, fires close()
         void script_close();
 
-        // Called every GB step, fires lua opus.update(dt)
+        // Called every GB step, fires lua update(dt)
         void script_update();
 
-        // Draw stuff here, fires lua opus.draw()
+        // Draw stuff here, fires lua draw()
         void script_draw();
     private:
+        GPU_Target *m_target;
+        graphics m_graphics;
     };
 }
 

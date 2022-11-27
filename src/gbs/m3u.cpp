@@ -1,5 +1,6 @@
 #include "m3u.h"
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -8,10 +9,9 @@ enum class M3U_FIELD {
     FILE_NAME = 0,
     GBS_TRACK_NUM,
     GBS_INFO_STR,
-    PUBLISHER,
     TRACK_LENGTH,
     EMPTY,
-    LAST_NUM
+    FADE_LENGTH
 };
 
 // TODO: Put this in a helper string_helper class
@@ -36,6 +36,21 @@ static inline std::string &trim(std::string &s) {
     return s;
 }
 
+static std::string stripBackslashes(const std::string &str)
+{
+    std::string ret;
+    ret.reserve(str.length());
+    for (char c : str)
+    {
+        if (c == '\\')
+            continue;
+
+        ret += c;
+    }
+
+    return ret;
+}
+
 bool gbs_opus::m3u::open(const std::string &path)
 {
     auto file = std::fstream();
@@ -55,7 +70,6 @@ bool gbs_opus::m3u::open(const std::string &path)
     } catch(...) {
         track_num = -1;
     }
-    std::cout << track_num << "\n";
 
     std::string m3u_str;
     if (!std::getline(file, m3u_str))
@@ -71,9 +85,12 @@ bool gbs_opus::m3u::open(const std::string &path)
         size_t i = 0, last_i = 0;
         while(i <= m3u_str.length())
         {
+            if (m3u_str[i] == '\\')
+                i += 2;
             if (m3u_str[i] == ',' || i == m3u_str.length())
             {
                 std::string data = m3u_str.substr(last_i, i-last_i);
+                std::cout << data << '\n';
                 trim(data);
 
                 // parse string here
@@ -87,7 +104,7 @@ bool gbs_opus::m3u::open(const std::string &path)
                             return false;
                         }
 
-                        this->filename = data.substr(0, data.length()-5);
+                        this->filename = stripBackslashes(data.substr(0, data.length()-5));
                         break;
                     case(M3U_FIELD::EMPTY):
                         if (!data.empty())
@@ -96,15 +113,27 @@ bool gbs_opus::m3u::open(const std::string &path)
                             return false;
                         }
                         break;
+
                     case(M3U_FIELD::GBS_INFO_STR):
                         parse_info_str(data);
                         break;
+
                     case(M3U_FIELD::GBS_TRACK_NUM):
-                        this->gbs_track_num = std::stoi(data);
+                        try {
+                            this->gbs_track_num = std::stoi(data);
+                        } catch (const std::invalid_argument &e)
+                        {
+                            std::cerr << "Error: M3U has an invalid track number. Could not convert \""
+                                << data << "\" to an integer.";
+                            return false;
+                        } catch (const std::out_of_range &e)
+                        {
+                            std::cerr << "Error: M3U track number is out of range. Received " << data <<
+                                ", which is probably incorrect data.\n";
+                            return false;
+                        }
                         break;
-                    case(M3U_FIELD::PUBLISHER):
-                        this->publisher = data;
-                        break;
+
                     case(M3U_FIELD::TRACK_LENGTH):
                         // parse time as seconds
                         int t_time;
@@ -115,9 +144,11 @@ bool gbs_opus::m3u::open(const std::string &path)
                         }
                         this->track_time = t_time;
                         break;
-                    case(M3U_FIELD::LAST_NUM):
+
+                    case(M3U_FIELD::FADE_LENGTH):
                         this->fade_time = std::stoi(data);
                         break;
+
                     default:
                         std::cout << "Warning: Unknown m3u field at index " <<
                             data_index << '\n';
@@ -149,6 +180,8 @@ bool gbs_opus::m3u::parse_info_str(const std::string &info)
         {
             // Check if data should be parsed
             bool should_parse = false;
+            if (info[i] == '\\')
+                i += 2;
             if (info[i] == ' ' && i < info.length()-1)
             {
                 if (info[i+1] == '-')
@@ -163,7 +196,7 @@ bool gbs_opus::m3u::parse_info_str(const std::string &info)
             {
                 // Parse data
                 std::string data = info.substr(last_i, i-last_i);
-                trim(data);
+                data = stripBackslashes(trim(data));
                 switch(data_index)
                 {
                     case 0: // Track title

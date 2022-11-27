@@ -13,12 +13,15 @@ namespace gbs_opus {
     public:
         image() : m_img() { }
         ~image() { close(); }
-        bool create(size_t width, size_t height, const std::vector<uint8_t> *pixels);
+        bool create(size_t width, size_t height, const std::vector<uint8_t> *pixels = nullptr);
 
         bool load(const std::string &path) { return load(path.c_str()); }
         bool load(const char *path);
         bool load(SDL_RWops *rw);
         void close();
+
+        [[nodiscard]] size_t width() const;
+        [[nodiscard]] size_t height() const;
 
         /// Gets the texture id used by the graphics library
         [[nodiscard]] uintptr_t id() const;

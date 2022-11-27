@@ -1,26 +1,41 @@
-env = {
-    print = print,
-    opus = {
+-- Each C++ plugin object will contain a lua context, using this sandbox driver
+-- Load the plugin module via run(code_string)
+-- User will
 
+-- Environment variables to pass into the sandbox
+env = {
+    math = math,
+    require = require,
+    print = print,
+    time = {
+        delta = nil, --
+        sinceStart = nil
     }
 }
 
--- run code under environment [Lua 5.2]
-local function run(untrusted_code)
-    local untrusted_function, message = load(untrusted_code, nil, 't', env)
+-- Load the plugin module into "env". Then you can run any code using e.g. env.update(10)
+local function run(untrustedCode)
+    local untrustedFunction, message = load(untrustedCode, nil, 't', env)
 
-    if not untrusted_function then return nil, message end
+    if not untrustedFunction then return nil, message end
 
-    return pcall(untrusted_function)
+    return pcall(untrustedFunction)
 end
 
-function main(args)
-    local res, message = run("myvar=10\nprint('Printing from runtime!')\nfunction opus.update(dt) print('update with val: '..dt) end")
+-- Update callback, gets channel
+local function update(chan)
+    if env.update ~= nil then
+        env.update(chan)
+    end
+end
+
+function test(args)
+    local res, message = run("myvar=10\nprint('Printing from runtime!')\nfunction update(dt) print('update with val: '..dt) myvar = myvar + 1 end\n"..
+        "require('scripts.yo')\nprint(math.ceil(132.123123123))")
+    env.update(10)
     if not res then
         print(message)
     end
-
-    if env.update ~= nil then
-        env.update(16.7)
-    end
 end
+
+test({"hi", "yo"});

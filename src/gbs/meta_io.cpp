@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "libgbs.hpp"
+#include "gbs_meta.h"
 
 using namespace nlohmann;
 
@@ -104,7 +105,7 @@ gbs_opus::meta_io::write_to_folder(const std::string &filepath)
         return false;
     }
 
-    SDL_RWops *rw = SDL_RWFromFile((filepath + "/metadata.json").c_str(), "w");
+    SDL_RWops *rw = SDL_RWFromFile((filepath + MetadataFilename).c_str(), "w");
     if (!rw)
     {
         std::cerr << "Error: meta_writer write cancelled, problem with "

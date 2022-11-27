@@ -90,3 +90,19 @@ endif()
 target_include_directories(gbs PRIVATE SDL/include)
 
 add_subdirectory(nfd-extended)
+
+# ========== LuaJIT ===============================================
+if (MACOS)
+    add_custom_command(OUTPUT lib/LuaJIT/src/libluajit.a
+            COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/LuaJIT && make MACOSX_DEPLOYMENT_TARGET=10.15
+            COMMENT "Making LuaJIT library")
+elseif(WIN32)
+#    add_custom_command(OUTPUT lib/LuaJIT/src/libluajit.lib
+#            COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/LuaJIT/src && mingw32-make
+#            COMMAND mv ${CMAKE_BINARY_DIR}\\
+#            COMMENT "Making LuaJIT library")
+elseif(LINUX)
+    add_custom_command(OUTPUT lib/LuaJIT/src/libluajit.a
+            COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/lib/LuaJIT && make
+            COMMENT "Making LuaJIT library")
+endif()

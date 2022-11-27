@@ -55,7 +55,7 @@ namespace gbs_opus
                     }
                     break;
                 case SDL_DROPFILE:
-                    on_dropfile.invoke(ev.drop);
+                    on_dropfile.try_invoke(ev.drop);
                     break;
             }
         }

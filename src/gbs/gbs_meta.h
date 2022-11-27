@@ -12,6 +12,8 @@
 
 namespace gbs_opus
 {
+    extern const char *MetadataFilename;
+
     class gbs_meta {
     public:
         struct track_meta

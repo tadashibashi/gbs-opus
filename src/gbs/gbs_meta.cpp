@@ -1,7 +1,3 @@
-//
-// Created by Aaron Ishibashi on 11/19/22.
-//
-
 #include "gbs_meta.h"
 #include "meta_io.h"
 
@@ -11,6 +7,8 @@
 #include <fstream>
 #include "include/nlohmann/json.hpp"
 #include "libgbs.hpp"
+
+const char *gbs_opus::MetadataFilename = "/.meta";
 
 bool gbs_opus::gbs_meta::open(const std::string &folder_path)
 {
@@ -35,9 +33,9 @@ bool gbs_opus::gbs_meta::open(const std::string &folder_path)
     {
         // Metadata exists in folder already? Use it.
 
-        if (std::filesystem::exists(folder_path + "/metadata.json"))
+        if (std::filesystem::exists(folder_path + MetadataFilename))
         {
-            std::ifstream file(folder_path + "/metadata.json");
+            std::ifstream file(folder_path + MetadataFilename);
             populate(nlohmann::json::parse(file));
         }
         else // look for m3u files to parse data from them, or make generic data from .gbs
@@ -45,7 +43,7 @@ bool gbs_opus::gbs_meta::open(const std::string &folder_path)
             std::vector<m3u> m3us;
             for (const auto &e : std::filesystem::directory_iterator(entry))
             {
-                if (e.path().filename() == "metadata.json")
+                if (e.path().filename() == MetadataFilename)
                 {
                     std::ifstream file(e.path());
                     populate(nlohmann::json::parse(file));
@@ -119,7 +117,7 @@ bool gbs_opus::gbs_meta::open(const std::string &folder_path)
 
             if (!writer.write_to_folder(entry.path().string()))
             {
-                std::cerr << "Error: failed to write metadata.json file\n";
+                std::cerr << "Error: failed to write metadata file\n";
                 gbs_close(gbs);
                 return false;
             }
@@ -136,7 +134,7 @@ bool gbs_opus::gbs_meta::open(const std::string &folder_path)
     }
 
 
-    /// Check for metadata.json file
+    /// Check for metadata file
 
     /// If none, load m3u files and create it with meta_writer obj
 
